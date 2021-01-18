@@ -40,7 +40,7 @@ dev-server:
 
 # Migrate your app, update DB and empty caches.
 migrate:
-	php bin/roadiz migrations:migrate;
+	php bin/roadiz themes:migrate src/Resources/config.yml;
 
 ngrok:
 	ngrok http ${DEV_DOMAIN}
