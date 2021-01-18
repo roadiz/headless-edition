@@ -10,19 +10,19 @@ for your desktop website and another one for your mobile, using the same node hi
 Roadiz is released under MIT license, so you can reuse
 and distribute its code for personal and commercial projects.
 
-* [Documentation](#documentation)
-* [Standard edition](#standard-edition)
-* [Usage](#usage)
-  + [Update Roadiz and your own theme assets](#update-roadiz-and-your-own-theme-assets)
-  + [Develop with *PHP* internal server](#develop-with-php-internal-server)
-  + [Develop with *Docker*](#develop-with-docker)
-    - [Install your theme assets and execute Roadiz commands](#install-your-theme-assets-and-execute-roadiz-commands)
-    - [On Linux](#on-linux)
-* [Update Roadiz sources](#update-roadiz-sources)
-* [Maximize performances for production](#maximize-performances-for-production)
-  + [Optimize class autoloader](#optimize-class-autoloader)
-  + [Increase PHP cache sizes](#increase-php-cache-sizes)
-* [Build a docker image with Gitlab Registry](#build-a-docker-image-with-gitlab-registry)
+- [Documentation](#documentation)
+- [Headless edition](#headless-edition)
+- [Usage](#usage)
+    * [Update Roadiz and your own theme assets](#update-roadiz-and-your-own-theme-assets)
+    * [Develop with *Docker*](#develop-with-docker)
+        - [Issue with Solr container](#issue-with-solr-container)
+    * [Develop with *PHP* internal server](#develop-with-php-internal-server)
+        + [On Linux](#on-linux)
+- [Update Roadiz sources](#update-roadiz-sources)
+- [Maximize performances for production](#maximize-performances-for-production)
+    * [Optimize class autoloader](#optimize-class-autoloader)
+    * [Increase PHP cache sizes](#increase-php-cache-sizes)
+- [Build a docker image with Gitlab Registry](#build-a-docker-image-with-gitlab-registry)
 
 ## Documentation
 
@@ -31,10 +31,11 @@ and distribute its code for personal and commercial projects.
 * *API* documentation can be found at http://api.roadiz.io
 * *Forum* can be found at https://ask.roadiz.io
 
-## Standard edition
+## Headless edition
 
-This is the **production-ready edition** for Roadiz. It is meant to set up your *Apache/Nginx* server root 
-to the `web/` folder, keeping your app sources and themes secure.
+This is the **API-ready edition** for Roadiz. It is meant to set up your *Apache/Nginx* server root 
+to the `web/` folder, keeping your app sources secure, and all your business logic into `src/` folder
+AKA `\App` PHP namespace.
 
 ## Usage
 
@@ -145,5 +146,3 @@ you’ll use the same dependencies' version in dev as well as in your CI jobs.
 1. Customize `.gitlab-ci.yml` file to reflect your *Gitlab* instance configuration and your *theme* path and your project name.
 2. Enable *Registry* and *Continuous integration* on your repository settings.
 3. Push your code on your *Gitlab* instance. An image build should be triggered after a new **tag** has been pushed and your test and build jobs succeeded.
-
-
