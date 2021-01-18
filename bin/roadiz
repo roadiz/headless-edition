@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use RZ\Roadiz\Console\RoadizApplication;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\ErrorHandler\Debug;
+
+set_time_limit(0);
+
+/** @deprecated Use Kernel::getProjectDir()  */
+define('ROADIZ_ROOT', dirname(realpath(__DIR__)));
+// Include Composer Autoload (relative to project root).
+require dirname(realpath(__DIR__)) . "/app/bootstrap.php";
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(array('--env', '-e'), getenv('APP_ENV') ?: 'dev');
+$debug = getenv('APP_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
+$preview = $input->hasParameterOption(array('--preview', ''));
+
+if ($debug) {
+    Debug::enable();
+}
+
+$kernel = new AppKernel($env, $debug, $preview);
+$application = new RoadizApplication($kernel);
+$application->run($input);

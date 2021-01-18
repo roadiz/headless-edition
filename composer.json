@@ -1,0 +1,98 @@
+{
+    "name": "roadiz/headless-edition",
+    "description": "Roadiz – Headless edition",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "roadiz/roadiz": "~1.6.0 || dev-develop",
+        "roadiz/models": "~1.6.0 || dev-develop",
+        "roadiz/documents": "~1.6.0 || dev-develop",
+        "roadiz/markdown": "~1.6.0 || dev-develop",
+        "roadiz/abstract-api-theme": "~1.6.0 || dev-develop",
+        "roadiz/entity-generator": "~1.6.0 || dev-main",
+        "rezozero/tree-walker": "~0.8"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.3",
+        "phpstan/phpstan": "^0.12.38",
+        "phpstan/phpstan-doctrine": "^0.12.19"
+    },
+    "suggest": {
+        "sentry/sentry": "Allows monolog to send your log messages to a Sentry instance.",
+        "php-http/guzzle7-adapter": "Required for sentry/sentry",
+        "guzzlehttp/psr7": "Required for sentry/sentry"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ambroise Maupate",
+            "email": "ambroise@rezo-zero.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "GeneratedNodeSources\\": "app/gen-src/GeneratedNodeSources",
+            "Proxies\\": "app/gen-src/Proxies"
+        },
+        "psr-0": {
+            "GlobalUrlMatcher": "app/gen-src/Compiled/",
+            "GlobalUrlGenerator": "app/gen-src/Compiled/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/DevAppKernel.php",
+            "app/AppCache.php"
+        ]
+    },
+    "scripts": {
+        "cache-scripts": [
+            "php bin/roadiz cache:clear -e prod",
+            "php bin/roadiz cache:clear -e dev",
+            "php bin/roadiz cache:clear -e prod --preview",
+            "php bin/roadiz cache:clear-fpm -e prod",
+            "php bin/roadiz cache:clear-fpm -e prod --preview",
+            "php bin/roadiz themes:assets:install Debug",
+            "php bin/roadiz themes:assets:install Install",
+            "php bin/roadiz themes:assets:install Rozier"
+        ],
+        "rotate-secret": [
+            "RZ\\Roadiz\\Utils\\Composer\\InstallFiles\\ScriptHandler::rotateSecret"
+        ],
+        "generate-key": [
+            "php bin/roadiz generate:private-key"
+        ],
+        "pre-docker": [
+            "php bin/roadiz themes:assets:install Rozier"
+        ],
+        "post-install-cmd": [
+            "RZ\\Roadiz\\Utils\\Composer\\InstallFiles\\ScriptHandler::install",
+            "@rotate-secret",
+            "@cache-scripts",
+            "@generate-key"
+        ],
+        "post-update-cmd": [
+            "RZ\\Roadiz\\Utils\\Composer\\InstallFiles\\ScriptHandler::install",
+            "@rotate-secret",
+            "@cache-scripts",
+            "@generate-key"
+        ],
+        "post-create-project-cmd": [
+            "RZ\\Roadiz\\Utils\\Composer\\InstallFiles\\ScriptHandler::install",
+            "@rotate-secret",
+            "@cache-scripts",
+            "@generate-key"
+        ]
+    },
+    "extra": {
+        "install-files": {
+            "app/conf/config.default.yml": "./app/conf/config.yml",
+            "samples/clear_cache.php.sample": "./web/clear_cache.php",
+            "samples/install.php.sample": "./web/install.php",
+            "samples/dev.php.sample": "./web/dev.php",
+            "samples/index.php.sample": "./web/index.php",
+            "./.env.dist": "./.env"
+        },
+        "config-path": "./app/conf/config.yml"
+    }
+}

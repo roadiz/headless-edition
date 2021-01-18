@@ -1,0 +1,186 @@
+version: '3'
+services:
+    db:
+        build:
+            # Custom image for file permissions
+            context: ./docker/mysql
+            args:
+                USER_UID: ${USER_UID}
+        networks:
+            default:
+        volumes:
+            - "./.data/db:/var/lib/mysql:delegated"
+            - "./docker/mysql/performances.cnf:/etc/mysql/conf.d/performances.cnf"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    pma:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - ${PUBLIC_PMA_PORT}:80/tcp
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        networks:
+            frontproxynet:
+                aliases:
+                    - headless_pma
+            default:
+        labels:
+            # Replace headless_pma by your service name
+            - "traefik.enable=true"
+            - "traefik.http.services.headless_pma.loadbalancer.server.scheme=http"
+            - "traefik.http.services.headless_pma.loadbalancer.server.port=80"
+            - "traefik.http.services.headless_pma.loadbalancer.passhostheader=true"
+            # Listen HTTP
+            - "traefik.http.routers.headless_pma.entrypoints=http"
+            - "traefik.http.routers.headless_pma.rule=Host(${HOSTNAME_PMA})"
+            - "traefik.http.routers.headless_pma.service=headless_pma"
+
+    app:
+        # Need to pass all vars to docker env for Crontab and supervisor scripts
+        env_file: "./.env"
+        build:
+            # Use Nginx
+            context: ./docker/php74-nginx-alpine
+            # Use Apache
+            #context: ./docker/php74-apache
+            args:
+                USER_UID: ${USER_UID}
+        ports:
+            - ${PUBLIC_APP_PORT}:80/tcp
+        depends_on:
+            - db
+            - solr
+        volumes:
+            - ${ROADIZ_APP_PATH}:/var/www/html:cached
+        networks:
+            frontproxynet:
+                aliases:
+                    - headless_app
+            default:
+        environment:
+            APP_CACHE: ${APP_CACHE}
+            TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+            USER_UID: ${USER_UID}
+            DEFAULT_GATEWAY: ${DEFAULT_GATEWAY}
+            BLACKFIRE_LOG_LEVEL: ${BLACKFIRE_LOG_LEVEL}
+            BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+            BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+            BLACKFIRE_CLIENT_ID: ${BLACKFIRE_CLIENT_ID}
+            BLACKFIRE_CLIENT_TOKEN: ${BLACKFIRE_CLIENT_TOKEN}
+            BLACKFIRE_ENDPOINT: "https://blackfire.io"
+        labels:
+            # Replace headless by your service name
+            - "traefik.enable=true"
+            - "traefik.http.services.headless.loadbalancer.server.scheme=http"
+            - "traefik.http.services.headless.loadbalancer.server.port=80"
+            - "traefik.http.services.headless.loadbalancer.passhostheader=true"
+            # Listen HTTP
+            - "traefik.http.routers.headless.entrypoints=http"
+            - "traefik.http.routers.headless.rule=Host(${HOSTNAME})"
+            - "traefik.http.routers.headless.service=headless"
+
+    solr:
+        build:
+            # Custom image for file permissions
+            context: ./docker/solr
+            args:
+                USER_UID: ${USER_UID}
+        ports:
+            - "${PUBLIC_SOLR_PORT}:8983/tcp"
+        volumes:
+            - "./.data/solr:/var/solr:delegated"
+        environment:
+            SOLR_UID: ${USER_UID}
+            SOLR_GID: ${USER_UID}
+        command:
+            - solr-precreate
+            - ${SOLR_CORE_NAME}
+        networks:
+            frontproxynet:
+                aliases:
+                    - headless_solr
+            default:
+        labels:
+            # Replace headless_solr by your service name
+            - "traefik.enable=true"
+            - "traefik.http.services.headless_solr.loadbalancer.server.scheme=http"
+            - "traefik.http.services.headless_solr.loadbalancer.server.port=8983"
+            - "traefik.http.services.headless_solr.loadbalancer.passhostheader=true"
+            # Listen HTTP
+            - "traefik.http.routers.headless_solr.entrypoints=http"
+            - "traefik.http.routers.headless_solr.rule=Host(${HOSTNAME_SOLR})"
+            - "traefik.http.routers.headless_solr.service=headless_solr"
+
+    mailer:
+        image: mailhog/mailhog
+        ports:
+            - ${PUBLIC_MAILER_PORT}:8025/tcp
+        networks:
+            frontproxynet:
+                aliases:
+                    - headless_mailer
+            default:
+        labels:
+            # Replace headless_mailer by your service name
+            - "traefik.enable=true"
+            - "traefik.http.services.headless_mailer.loadbalancer.server.scheme=http"
+            - "traefik.http.services.headless_mailer.loadbalancer.server.port=8025"
+            - "traefik.http.services.headless_mailer.loadbalancer.passhostheader=true"
+            # Listen HTTP
+            - "traefik.http.routers.headless_mailer.entrypoints=http"
+            - "traefik.http.routers.headless_mailer.rule=Host(${HOSTNAME_MAILER})"
+            - "traefik.http.routers.headless_mailer.service=headless_mailer"
+
+    blackfire:
+        image: blackfire/blackfire
+        environment:
+            # Exposes BLACKFIRE_* environment variables from the host
+            BLACKFIRE_LOG_LEVEL: ${BLACKFIRE_LOG_LEVEL}
+            BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+            BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+            BLACKFIRE_CLIENT_ID: ${BLACKFIRE_CLIENT_ID}
+            BLACKFIRE_CLIENT_TOKEN: ${BLACKFIRE_CLIENT_TOKEN}
+
+    varnish:
+        build:
+            context: ./docker/varnish
+        tmpfs: /usr/local/var/varnish:exec
+        depends_on:
+            - app
+        links:
+            - app:app
+        ports:
+            - ${PUBLIC_VARNISH_PORT}:80/tcp
+        networks:
+            frontproxynet:
+                aliases:
+                    - headless_varnish
+            default:
+        labels:
+            # Replace headless by your service name
+            - "traefik.enable=true"
+            - "traefik.http.services.headless_varnish.loadbalancer.server.scheme=http"
+            - "traefik.http.services.headless_varnish.loadbalancer.server.port=80"
+            - "traefik.http.services.headless_varnish.loadbalancer.passhostheader=true"
+            # Listen HTTP
+            - "traefik.http.routers.headless_varnish.entrypoints=http"
+            - "traefik.http.routers.headless_varnish.rule=Host(${HOSTNAME_VARNISH})"
+            - "traefik.http.routers.headless_varnish.service=headless_varnish"
+
+networks:
+    frontproxynet:
+        external: true
+    # If you need to use port forwarding, fixing default gateway can be useful
+    # to keep same host IP address between service restarts
+    default:
+        ipam:
+            driver: default
+            config:
+                -   subnet: ${DEFAULT_GATEWAY}/16
