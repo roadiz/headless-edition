@@ -10,7 +10,10 @@ use App\TreeWalker\BlockNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestMatcher;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Security\Http\AccessMap;
 use Symfony\Component\Security\Http\FirewallMap;
 
@@ -82,6 +85,21 @@ class AppServiceProvider implements ServiceProviderInterface
 //                $c['api.exception_listener']
 //            );
             return $firewallMap;
+        });
+
+        $container['app.file_locator'] = function (Container $c) {
+            $resourcesFolder = dirname(__FILE__) . '/Resources';
+            return new FileLocator([
+                $resourcesFolder,
+                $resourcesFolder . '/routing',
+                $resourcesFolder . '/config',
+            ]);
+        };
+
+        $container->extend('routeCollection', function (RouteCollection $routeCollection, Container $c) {
+            $loader = new YamlFileLoader($c['app.file_locator']);
+            $routeCollection->addCollection($loader->load('routes.yml'));
+            return $routeCollection;
         });
     }
 }

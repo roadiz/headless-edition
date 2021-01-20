@@ -21,12 +21,6 @@ doctrine:
 # node-sources data will be lost.
 inheritance:
     type: single_table
-# Register here your themes…
-themes:
-    -
-        classname: \Themes\AbstractApiTheme\AbstractApiThemeApp
-        hostname: '*'
-        routePrefix: ''
 # http://symfony.com/doc/current/reference/configuration/doctrine.html#caching-drivers
 # If null or empty, Roadiz will use ArrayCache
 cacheDriver:
