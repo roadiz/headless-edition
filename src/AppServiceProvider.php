@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controller\NullController;
 use App\Serialization\BlockWalkerSubscriber;
 use App\Serialization\NodesSourcesUriSubscriber;
 use App\Serialization\WalkerApiSubscriber;
@@ -25,6 +26,11 @@ class AppServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
+        /*
+         * Prevent accessing JSON resources from their Node path.
+         */
+        $container['nodeDefaultControllerClass'] = NullController::class;
+
         $container[NodeSourceWalkerContext::class] = function ($c) {
             return new NodeSourceWalkerContext(
                 $c['stopwatch'],

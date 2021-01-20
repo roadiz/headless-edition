@@ -37,6 +37,9 @@ This is the **API-ready edition** for Roadiz. It is meant to set up your *Apache
 to the `web/` folder, keeping your app sources secure, and all your business logic into `src/` folder
 AKA `\App` PHP namespace.
 
+**Headless edition** does not need any *themes*, so you can build your API schema right into the backoffice
+and use REST API entry points without any code.
+
 ## Usage
 
 ```bash
