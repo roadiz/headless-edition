@@ -6,6 +6,11 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Do not serve nodes-sources from their Path or Path + .json.
+ *
+ * @package App\Controller
+ */
 class NullController
 {
     public function indexAction(): Response
