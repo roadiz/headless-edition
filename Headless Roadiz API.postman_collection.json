@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Neutral",
+			"name": "Example: Neutral",
 			"item": [
 				{
 					"name": "Get neutrals",
@@ -61,10 +61,30 @@
 					},
 					"response": []
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
-			"name": "Pages",
+			"name": "Example: Page",
 			"item": [
 				{
 					"name": "Get pages",
@@ -72,7 +92,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/page?node.parent=menu&order[node.position]=asc&tags[]=project",
+							"raw": "{{baseUrl}}/api/1.0/page?node.parent=menu&order[node.position]=asc",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -102,7 +122,8 @@
 								},
 								{
 									"key": "tags[]",
-									"value": "project"
+									"value": "project",
+									"disabled": true
 								}
 							]
 						}
@@ -171,7 +192,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "8"
 								}
 							]
 						}
@@ -211,6 +232,26 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -272,6 +313,127 @@
 			]
 		},
 		{
+			"name": "NodesSources",
+			"item": [
+				{
+					"name": "Get all nodes-sources",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources?order[node.position]=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"nodes-sources"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "node.parent",
+									"value": "menu",
+									"disabled": true
+								},
+								{
+									"key": "order[node.position]",
+									"value": "asc"
+								},
+								{
+									"key": "path",
+									"value": "/home-page",
+									"disabled": true
+								},
+								{
+									"key": "node.nodeType.reachable",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "node.nodeType[]",
+									"value": "neutral",
+									"disabled": true
+								},
+								{
+									"key": "node.nodeType[]",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "tags",
+									"value": "project",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search all nodes-sources",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources/search?search=tempora",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"nodes-sources",
+								"search"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "node.parent",
+									"value": "menu",
+									"disabled": true
+								},
+								{
+									"key": "node.nodeType[]",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "node.nodeType[]",
+									"value": "contentblock",
+									"disabled": true
+								},
+								{
+									"key": "tags",
+									"value": "project",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "tempora"
+								},
+								{
+									"key": "node.visible",
+									"value": "0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Root",
 			"request": {
 				"method": "GET",
@@ -303,67 +465,6 @@
 						"api",
 						"1.0",
 						"me"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all nodes-sources",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/api/1.0/nodes-sources",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"1.0",
-						"nodes-sources"
-					],
-					"query": [
-						{
-							"key": "_preview",
-							"value": "1",
-							"disabled": true
-						},
-						{
-							"key": "node.parent",
-							"value": "menu",
-							"disabled": true
-						},
-						{
-							"key": "order[node.position]",
-							"value": "asc",
-							"disabled": true
-						},
-						{
-							"key": "path",
-							"value": "/root-page",
-							"disabled": true
-						},
-						{
-							"key": "node.nodeType.reachable",
-							"value": "0",
-							"disabled": true
-						},
-						{
-							"key": "node.nodeType[]",
-							"value": "neutral",
-							"disabled": true
-						},
-						{
-							"key": "node.nodeType[]",
-							"value": "page",
-							"disabled": true
-						},
-						{
-							"key": "tags",
-							"value": "project",
-							"disabled": true
-						}
 					]
 				}
 			},
