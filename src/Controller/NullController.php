@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @package App\Controller
  */
-class NullController
+final class NullController
 {
     public function indexAction(): Response
     {

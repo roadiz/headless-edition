@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controller\ContactFormController;
 use App\Controller\NullController;
 use App\Serialization\BlockWalkerSubscriber;
 use App\Serialization\NodesSourcesUriSubscriber;
@@ -11,8 +12,11 @@ use App\TreeWalker\AutoChildrenNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestMatcher;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\Storage\CacheStorage;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Security\Http\AccessMap;
@@ -124,5 +128,27 @@ class AppServiceProvider implements ServiceProviderInterface
             $routeCollection->addCollection($loader->load('routes.yml'));
             return $routeCollection;
         });
+
+        /*
+         * RateLimiterFactory for POST contact forms
+         */
+        $container['limiter.contact_form'] = function (Container $c) {
+            return new RateLimiterFactory([
+                'id' => 'contact-form',
+                'policy' => 'token_bucket',
+                'limit' => 5,
+                'rate' => ['interval' => '1 minute'],
+            ], new CacheStorage(new ApcuAdapter($c['config']['appNamespace'])));
+        };
+
+        /*
+         * Configure custom controllers
+         */
+        $container[ContactFormController::class] = function (Container $c) {
+            return new ContactFormController(
+                $c['contactFormManager'],
+                $c['limiter.contact_form']
+            );
+        };
     }
 }

@@ -10,7 +10,8 @@
         "roadiz/markdown": "~1.6.0 || dev-develop",
         "roadiz/abstract-api-theme": "~1.6.0 || dev-develop",
         "roadiz/entity-generator": "~1.6.0 || dev-main",
-        "rezozero/tree-walker": "~0.8.4"
+        "rezozero/tree-walker": "~0.8.4",
+        "symfony/rate-limiter": "^5.2"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.3",
