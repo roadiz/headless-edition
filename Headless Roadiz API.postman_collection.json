@@ -1,0 +1,426 @@
+{
+	"info": {
+		"_postman_id": "3bc55e16-dd0a-47a2-87e1-9e7c3c345aac",
+		"name": "Headless Roadiz API",
+		"description": "This is the **API-ready edition** for Roadiz. It is meant to set up your *Apache/Nginx* server root \nto the `web/` folder, keeping your app sources secure, and all your business logic into `src/` folder\nAKA `\\App` PHP namespace.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Neutral",
+			"item": [
+				{
+					"name": "Get neutrals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/neutral",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"neutral"
+							],
+							"query": [
+								{
+									"key": "node.visible",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one neutral by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/neutral/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"neutral",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pages",
+			"item": [
+				{
+					"name": "Get pages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page?node.parent=menu&order[node.position]=asc&tags[]=project",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "node.parent",
+									"value": "menu"
+								},
+								{
+									"key": "order[node.position]",
+									"value": "asc"
+								},
+								{
+									"key": "path",
+									"value": "/contact",
+									"disabled": true
+								},
+								{
+									"key": "tags[]",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get pages tags",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page/tags?order[position]=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page",
+								"tags"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "order[position]",
+									"value": "asc"
+								},
+								{
+									"key": "search",
+									"value": "new",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one page by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page",
+								":id"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one page by Slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page/by-slug/:slug",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page",
+								"by-slug",
+								":slug"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "about-us"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Forms",
+			"item": [
+				{
+					"name": "Post contact-form",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "hello@test.test",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Hello World",
+									"type": "text"
+								},
+								{
+									"key": "message",
+									"value": "Repudiandae eius ut inventore consequatur. Ab ut quam nobis rerum sequi enim. Et vel voluptatem reprehenderit et et est. Dolor sit est a expedita beatae laborum aut sit. Aliquid vitae cumque esse deleniti cupiditate omnis.",
+									"type": "text"
+								},
+								{
+									"key": "consent",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "recaptcha",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/forms/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"forms",
+								"contact"
+							]
+						},
+						"description": "POST a contact-form with a RateLimiter security configured with 5 requests/minutes max (successful or failed)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/1.0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"1.0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Me",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/1.0/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all nodes-sources",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/1.0/nodes-sources",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"1.0",
+						"nodes-sources"
+					],
+					"query": [
+						{
+							"key": "_preview",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "node.parent",
+							"value": "menu",
+							"disabled": true
+						},
+						{
+							"key": "order[node.position]",
+							"value": "asc",
+							"disabled": true
+						},
+						{
+							"key": "path",
+							"value": "/root-page",
+							"disabled": true
+						},
+						{
+							"key": "node.nodeType.reachable",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "node.nodeType[]",
+							"value": "neutral",
+							"disabled": true
+						},
+						{
+							"key": "node.nodeType[]",
+							"value": "page",
+							"disabled": true
+						},
+						{
+							"key": "tags",
+							"value": "project",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{apiKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-Api-Key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://headless.test/dev.php"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "clientId",
+			"value": ""
+		},
+		{
+			"key": "apiKey",
+			"value": ""
+		}
+	]
+}
