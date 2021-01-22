@@ -7,7 +7,7 @@ use App\Controller\NullController;
 use App\Serialization\BlockWalkerSubscriber;
 use App\Serialization\NodesSourcesUriSubscriber;
 use App\Serialization\WalkerApiSubscriber;
-use App\TreeWalker\BlockNodeSourceWalker;
+use App\TreeWalker\AutoChildrenNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -26,6 +26,23 @@ class AppServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
+        /**
+         * @return int in minutes
+         */
+        $container['api.cache.ttl'] = (int) getenv('APP_API_CACHE_TTL');
+
+        /**
+         * @return array
+         */
+        $container['api.cors_options'] = [
+            'allow_credentials' => true,
+            'allow_origin' => ['*'],
+            'allow_headers' => true,
+            'origin_regex' => false,
+            'allow_methods' => ['GET'],
+            'expose_headers' => [],
+            'max_age' => 60*60*24
+        ];
         /*
          * Prevent accessing JSON resources from their Node path.
          */
@@ -51,7 +68,7 @@ class AppServiceProvider implements ServiceProviderInterface
             $subscribers[] = new NodesSourcesUriSubscriber($c['router']);
             $subscribers[] = new WalkerApiSubscriber();
             $subscribers[] = new BlockWalkerSubscriber(
-                BlockNodeSourceWalker::class,
+                AutoChildrenNodeSourceWalker::class,
                 $c[NodeSourceWalkerContext::class],
                 $c['nodesSourcesUrlCacheProvider'],
                 4

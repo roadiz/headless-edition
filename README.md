@@ -13,7 +13,6 @@ and distribute its code for personal and commercial projects.
 - [Documentation](#documentation)
 - [Headless edition](#headless-edition)
 - [Usage](#usage)
-    * [Update Roadiz and your own theme assets](#update-roadiz-and-your-own-theme-assets)
     * [Develop with *Docker*](#develop-with-docker)
         - [Issue with Solr container](#issue-with-solr-container)
     * [Develop with *PHP* internal server](#develop-with-php-internal-server)
@@ -38,7 +37,13 @@ to the `web/` folder, keeping your app sources secure, and all your business log
 AKA `\App` PHP namespace.
 
 **Headless edition** does not need any *themes*, so you can build your API schema right into the backoffice
-and use REST API entry points without any code.
+and use REST API entry points without any code. A built-in *tree-walker* is configured automatically to walk
+your node-types children fields to create a JSON graph when requesting a single node (by *id* or by *slug*).
+
+**Headless edition** is heavily based on `roadiz/abstract-api-theme` features, you will find additional information about registered routes and API entry points on its [readme](https://github.com/roadiz/AbstractApiTheme/blob/develop/README.md).
+*AbstractApiTheme* is already registered for you so you can begin creating your data structure right away. Any additional configuration is available in your `src/AppServiceProvider.php` container service-provider.
+
+Automatic node-source controller resolution is disabled and any request on a node-source path will end up in `src/Controller/NullController.php`, so your application clients have to use your secure API end-points.
 
 ## Usage
 
@@ -52,13 +57,7 @@ cd headless-edition;
 Composer will automatically create a new project based on Roadiz and download every dependency. 
 
 Composer script will copy a default configuration file and your entry-points in `web/` folder automatically
-and a `.env` file in your project root to setup your *Docker* development environment.
-
-### Update Roadiz and your own theme assets
-
-```bash
-composer update -o --no-dev
-```
+and a `.env` file in your project root to set up your *Docker* development environment.
 
 ### Develop with *Docker*
 
@@ -111,7 +110,7 @@ USER_UID=1000
 
 ## Update Roadiz sources
 
-Simply call `composer update` to upgrade Roadiz. 
+Simply call `composer update` to upgrade Roadiz packages. 
 You’ll need to execute regular operations if you need to migrate your database.
 
 ## Maximize performances for production
