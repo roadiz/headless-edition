@@ -36,6 +36,11 @@ class AppServiceProvider implements ServiceProviderInterface
         $container['api.cache.ttl'] = (int) getenv('APP_API_CACHE_TTL');
 
         /**
+         * @return bool Displays cache tags in response headers.
+         */
+        $container['api.use_cache_tags'] = false;
+
+        /**
          * @return array
          */
         $container['api.cors_options'] = [
