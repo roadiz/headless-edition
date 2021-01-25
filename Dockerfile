@@ -1,4 +1,4 @@
-FROM roadiz/php74-nginx-alpine:latest
+FROM roadiz/php80-nginx-alpine:latest
 MAINTAINER Ambroise Maupate <ambroise@rezo-zero.com>
 ARG USER_UID=1000
 ENV APP_ENV=prod
@@ -7,8 +7,8 @@ ENV APP_DEBUG=0
 RUN usermod -u ${USER_UID} www-data \
     && groupmod -g ${USER_UID} www-data
 
-COPY docker/php74-nginx-alpine/crontab.txt /crontab.txt
-COPY docker/php74-nginx-alpine/before_launch.sh /before_launch.sh
+COPY docker/php-nginx-alpine/crontab.txt /crontab.txt
+COPY docker/php-nginx-alpine/before_launch.sh /before_launch.sh
 COPY --chown=www-data:www-data . /var/www/html/
 COPY --chown=www-data:www-data samples/index.php.sample /var/www/html/web/index.php
 COPY --chown=www-data:www-data samples/clear_cache.php.sample /var/www/html/web/clear_cache.php
