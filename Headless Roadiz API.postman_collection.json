@@ -13,7 +13,13 @@
 					"name": "Get neutrals",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/1.0/neutral",
 							"host": [
@@ -39,7 +45,13 @@
 					"name": "Get one neutral by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/1.0/neutral/:id",
 							"host": [
@@ -54,7 +66,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "1",
+									"type": "string"
 								}
 							]
 						}
@@ -90,9 +103,15 @@
 					"name": "Get pages",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/page?node.parent=menu&order[node.position]=asc",
+							"raw": "{{baseUrl}}/api/1.0/page?node.parent=main-menu&order[node.position]=asc&_locale=fr",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -109,7 +128,7 @@
 								},
 								{
 									"key": "node.parent",
-									"value": "menu"
+									"value": "main-menu"
 								},
 								{
 									"key": "order[node.position]",
@@ -117,12 +136,26 @@
 								},
 								{
 									"key": "path",
-									"value": "/contact",
+									"value": "/a-propos",
 									"disabled": true
 								},
 								{
 									"key": "tags[]",
 									"value": "project",
+									"disabled": true
+								},
+								{
+									"key": "_locale",
+									"value": "fr"
+								},
+								{
+									"key": "tags[]",
+									"value": "production",
+									"disabled": true
+								},
+								{
+									"key": "tagExclusive",
+									"value": "1",
 									"disabled": true
 								}
 							]
@@ -134,7 +167,13 @@
 					"name": "Get pages tags",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/1.0/page/tags?order[position]=asc",
 							"host": [
@@ -160,6 +199,59 @@
 									"key": "search",
 									"value": "new",
 									"disabled": true
+								},
+								{
+									"key": "_locale",
+									"value": "fr",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get pages archives",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page/archives",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page",
+								"archives"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "_locale",
+									"value": "fr",
+									"disabled": true
+								},
+								{
+									"key": "node.parent",
+									"value": "menu",
+									"disabled": true
+								},
+								{
+									"key": "tags[]",
+									"value": "project",
+									"disabled": true
 								}
 							]
 						}
@@ -170,7 +262,13 @@
 					"name": "Get one page by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/1.0/page/:id",
 							"host": [
@@ -192,7 +290,54 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "8"
+									"value": "3",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one page by ID and locale",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/page/:id/:_locale",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"page",
+								":id",
+								":_locale"
+							],
+							"query": [
+								{
+									"key": "_preview",
+									"value": "1",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2",
+									"type": "string"
+								},
+								{
+									"key": "_locale",
+									"value": "fr",
+									"type": "string"
 								}
 							]
 						}
@@ -203,9 +348,15 @@
 					"name": "Get one page by Slug",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/page/by-slug/:slug",
+							"raw": "{{baseUrl}}/api/1.0/page/by-slug/:slug?_locale=fr",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -221,12 +372,17 @@
 									"key": "_preview",
 									"value": "1",
 									"disabled": true
+								},
+								{
+									"key": "_locale",
+									"value": "fr"
 								}
 							],
 							"variable": [
 								{
 									"key": "slug",
-									"value": "about-us"
+									"value": "about-us",
+									"type": "string"
 								}
 							]
 						}
@@ -262,7 +418,13 @@
 					"name": "Post contact-form",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
@@ -319,9 +481,21 @@
 					"name": "Get all nodes-sources",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json",
+								"disabled": true
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/nodes-sources?order[node.position]=asc",
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources?_preview=1&order[node.position]=asc",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -333,8 +507,7 @@
 							"query": [
 								{
 									"key": "_preview",
-									"value": "1",
-									"disabled": true
+									"value": "1"
 								},
 								{
 									"key": "node.parent",
@@ -352,12 +525,12 @@
 								},
 								{
 									"key": "node.nodeType.reachable",
-									"value": "1",
+									"value": "0",
 									"disabled": true
 								},
 								{
 									"key": "node.nodeType[]",
-									"value": "neutral",
+									"value": "menu",
 									"disabled": true
 								},
 								{
@@ -379,9 +552,21 @@
 					"name": "Search all nodes-sources",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/nodes-sources/search?search=tempora",
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources/search?search=propos&_locale=fr",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -419,12 +604,16 @@
 								},
 								{
 									"key": "search",
-									"value": "tempora"
+									"value": "propos"
 								},
 								{
 									"key": "node.visible",
 									"value": "0",
 									"disabled": true
+								},
+								{
+									"key": "_locale",
+									"value": "fr"
 								}
 							]
 						}
@@ -437,7 +626,13 @@
 			"name": "Root",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{baseUrl}}/api/1.0",
 					"host": [
@@ -455,7 +650,13 @@
 			"name": "Me",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{baseUrl}}/api/1.0/me",
 					"host": [
