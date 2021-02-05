@@ -1,5 +1,21 @@
 # Ignore Roadiz tools and cache for
 # creating a docker image
+.dockerignore
+.DS_Store
+.git
+.github
+.gitignore
+.gitmodules
+.gitlab-ci.yml
+.idea
+.data
+.sass-cache
+tests
+README.md
+Dockerfile
+Dockerfile.archive
+docker-compose.yml
+Headless Roadiz API.postman_collection.json
 
 */temp*
 */*/temp*
