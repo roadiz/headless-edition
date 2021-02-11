@@ -1,5 +1,6 @@
 ---
 importFiles:
+    # Paths must be relative to project root
     roles: []
     groups: []
     settings: []
