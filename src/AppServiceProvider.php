@@ -76,7 +76,6 @@ class AppServiceProvider implements ServiceProviderInterface
         };
 
         $container->extend('serializer.subscribers', function (array $subscribers, Container $c) {
-            $subscribers[] = new NodesSourcesUriSubscriber($c['router']);
             $subscribers[] = new WalkerApiSubscriber();
             $subscribers[] = new BlockWalkerSubscriber(
                 AutoChildrenNodeSourceWalker::class,
