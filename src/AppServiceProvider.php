@@ -51,7 +51,7 @@ class AppServiceProvider implements ServiceProviderInterface
             'allow_headers' => true,
             'origin_regex' => false,
             'allow_methods' => ['GET'],
-            'expose_headers' => [],
+            'expose_headers' => ['Link'],
             'max_age' => 60*60*24
         ];
         /*
