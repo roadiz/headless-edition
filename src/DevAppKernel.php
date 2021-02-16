@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
+namespace App;
+
 /**
  * Customize Roadiz kernel with your own project settings for development.
  */
 class DevAppKernel extends AppKernel
 {
-    /**
-     * @var string
-     */
-    private $appName;
+    private string $appName;
 
     /**
      * @param string $environment
@@ -17,7 +16,7 @@ class DevAppKernel extends AppKernel
      * @param bool $preview
      * @param string $appName
      */
-    public function __construct($environment, $debug, $preview = false, $appName = "roadiz_dev")
+    public function __construct(string $environment, bool $debug, bool $preview = false, $appName = "roadiz_dev")
     {
         parent::__construct($environment, $debug, $preview);
 

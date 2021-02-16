@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\AppCache;
+use App\AppKernel;
 use RZ\Roadiz\Core\HttpFoundation\Request;
 
 require(dirname(__DIR__) . "/app/bootstrap.php");

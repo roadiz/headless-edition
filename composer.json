@@ -39,12 +39,7 @@
         "psr-0": {
             "GlobalUrlMatcher": "app/gen-src/Compiled/",
             "GlobalUrlGenerator": "app/gen-src/Compiled/"
-        },
-        "classmap": [
-            "app/AppKernel.php",
-            "app/DevAppKernel.php",
-            "app/AppCache.php"
-        ]
+        }
     },
     "scripts": {
         "cache-scripts": [

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\AppKernel;
+//use App\DevAppKernel;
 use RZ\Roadiz\Core\Events\Cache\CachePurgeAssetsRequestEvent;
 use RZ\Roadiz\Core\Events\Cache\CachePurgeRequestEvent;
 use RZ\Roadiz\Core\HttpFoundation\Request;
