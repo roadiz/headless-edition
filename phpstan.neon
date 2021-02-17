@@ -15,6 +15,7 @@ parameters:
         - '#Doctrine\\Persistence\\ObjectRepository#'
         - '#Call to an undefined method [a-zA-Z0-9\\_\\<\\>]+::findOneBy[A-Z][a-zA-Z]*\(\)#'
         - '#Call to an undefined method [a-zA-Z0-9\\_\\<\\>]+::findBy[A-Z][a-zA-Z]*\(\)#'
+        - '#Call to function is_array\(\) with string\|false will always evaluate to false#'
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
