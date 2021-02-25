@@ -6,7 +6,6 @@ namespace App;
 use App\Controller\ContactFormController;
 use App\Controller\NullController;
 use App\Serialization\BlockWalkerSubscriber;
-use App\Serialization\NodesSourcesUriSubscriber;
 use App\Serialization\WalkerApiSubscriber;
 use App\TreeWalker\AutoChildrenNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
