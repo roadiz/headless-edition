@@ -10,20 +10,6 @@ NC=\033[0m
 # Use a local available port
 DEV_DOMAIN="0.0.0.0:${APP_PORT}"
 
-# if you want to deploy old-school style
-REMOTE_FTP_PATH="/path/to/server/root"
-REMOTE_FTP_USER="ftp-user"
-REMOTE_FTP_PASS="ftp-secret"
-REMOTE_FTP_HOST="ftp-host"
-
-# Default task install + build
-all : configtest install build cache
-
-# Install NPM deps and Bower deps
-install : configtest
-
-.PHONY : clean uninstall update build watch cache
-
 cache :
 	php bin/roadiz cache:clear -e dev
 	php bin/roadiz cache:clear -e prod
@@ -40,7 +26,7 @@ dev-server:
 
 # Migrate your app, update DB and empty caches.
 migrate:
-	php bin/roadiz migrations:migrate;
+	php bin/roadiz themes:migrate src/Resources/config.yml;
 
 ngrok:
 	ngrok http ${DEV_DOMAIN}

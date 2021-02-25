@@ -10,19 +10,18 @@ for your desktop website and another one for your mobile, using the same node hi
 Roadiz is released under MIT license, so you can reuse
 and distribute its code for personal and commercial projects.
 
-* [Documentation](#documentation)
-* [Standard edition](#standard-edition)
-* [Usage](#usage)
-  + [Update Roadiz and your own theme assets](#update-roadiz-and-your-own-theme-assets)
-  + [Develop with *PHP* internal server](#develop-with-php-internal-server)
-  + [Develop with *Docker*](#develop-with-docker)
-    - [Install your theme assets and execute Roadiz commands](#install-your-theme-assets-and-execute-roadiz-commands)
-    - [On Linux](#on-linux)
-* [Update Roadiz sources](#update-roadiz-sources)
-* [Maximize performances for production](#maximize-performances-for-production)
-  + [Optimize class autoloader](#optimize-class-autoloader)
-  + [Increase PHP cache sizes](#increase-php-cache-sizes)
-* [Build a docker image with Gitlab Registry](#build-a-docker-image-with-gitlab-registry)
+- [Documentation](#documentation)
+- [Headless edition](#headless-edition)
+- [Usage](#usage)
+    * [Develop with *Docker*](#develop-with-docker)
+        - [Issue with Solr container](#issue-with-solr-container)
+    * [Develop with *PHP* internal server](#develop-with-php-internal-server)
+        + [On Linux](#on-linux)
+- [Update Roadiz sources](#update-roadiz-sources)
+- [Maximize performances for production](#maximize-performances-for-production)
+    * [Optimize class autoloader](#optimize-class-autoloader)
+    * [Increase PHP cache sizes](#increase-php-cache-sizes)
+- [Build a docker image with Gitlab Registry](#build-a-docker-image-with-gitlab-registry)
 
 ## Documentation
 
@@ -31,10 +30,20 @@ and distribute its code for personal and commercial projects.
 * *API* documentation can be found at http://api.roadiz.io
 * *Forum* can be found at https://ask.roadiz.io
 
-## Standard edition
+## Headless edition
 
-This is the **production-ready edition** for Roadiz. It is meant to set up your *Apache/Nginx* server root 
-to the `web/` folder, keeping your app sources and themes secure.
+This is the **API-ready edition** for Roadiz. It is meant to set up your *Apache/Nginx* server root 
+to the `web/` folder, keeping your app sources secure, and all your business logic into `src/` folder
+AKA `\App` PHP namespace.
+
+**Headless edition** does not need any *themes*, so you can build your API schema right into the backoffice
+and use REST API entry points without any code. A built-in *tree-walker* is configured automatically to walk
+your node-types children fields to create a JSON graph when requesting a single node (by *id* or by *slug*).
+
+**Headless edition** is heavily based on `roadiz/abstract-api-theme` features, you will find additional information about registered routes and API entry points on its [readme](https://github.com/roadiz/AbstractApiTheme/blob/develop/README.md).
+*AbstractApiTheme* is already registered for you so you can begin creating your data structure right away. Any additional configuration is available in your `src/AppServiceProvider.php` container service-provider.
+
+Automatic node-source controller resolution is disabled and any request on a node-source path will end up in `src/Controller/NullController.php`, so your application clients have to use your secure API end-points.
 
 ## Usage
 
@@ -48,13 +57,7 @@ cd headless-edition;
 Composer will automatically create a new project based on Roadiz and download every dependency. 
 
 Composer script will copy a default configuration file and your entry-points in `web/` folder automatically
-and a `.env` file in your project root to setup your *Docker* development environment.
-
-### Update Roadiz and your own theme assets
-
-```bash
-composer update -o --no-dev
-```
+and a `.env` file in your project root to set up your *Docker* development environment.
 
 ### Develop with *Docker*
 
@@ -107,7 +110,7 @@ USER_UID=1000
 
 ## Update Roadiz sources
 
-Simply call `composer update` to upgrade Roadiz. 
+Simply call `composer update` to upgrade Roadiz packages. 
 You’ll need to execute regular operations if you need to migrate your database.
 
 ## Maximize performances for production
@@ -131,7 +134,7 @@ realpath_cache_ttl=600
 
 ## Build a docker image with Gitlab Registry
 
-You can create a standalone *Docker* image with your Roadiz project thanks to our `roadiz/php74-nginx-alpine` base 
+You can create a standalone *Docker* image with your Roadiz project thanks to our `roadiz/php80-nginx-alpine` base 
 image, a continuous integration tool such as *Gitlab CI* and a private *Docker* registry. 
 All your theme assets will be compiled in a controlled environment, and your production website 
 will have a minimal downtime at each update.
@@ -145,5 +148,3 @@ you’ll use the same dependencies' version in dev as well as in your CI jobs.
 1. Customize `.gitlab-ci.yml` file to reflect your *Gitlab* instance configuration and your *theme* path and your project name.
 2. Enable *Registry* and *Continuous integration* on your repository settings.
 3. Push your code on your *Gitlab* instance. An image build should be triggered after a new **tag** has been pushed and your test and build jobs succeeded.
-
-

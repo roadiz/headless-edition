@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace App;
+
 use RZ\Roadiz\Core\Kernel;
 
 /**
@@ -14,8 +16,7 @@ class AppKernel extends Kernel
     public function getRootDir()
     {
         if (null === $this->rootDir) {
-            $r = new \ReflectionObject($this);
-            $this->rootDir = dirname($r->getFileName());
+            $this->rootDir = $this->getProjectDir() . '/app';
         }
         return $this->rootDir;
     }
@@ -31,7 +32,7 @@ class AppKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function getPublicFilesPath()
+    public function getPublicFilesPath(): string
     {
         return $this->getPublicDir() . $this->getPublicFilesBasePath();
     }
@@ -39,7 +40,7 @@ class AppKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function getPrivateFilesPath()
+    public function getPrivateFilesPath(): string
     {
         return $this->getProjectDir() . $this->getPrivateFilesBasePath();
     }
@@ -47,7 +48,7 @@ class AppKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function getFontsFilesPath()
+    public function getFontsFilesPath(): string
     {
         return $this->getProjectDir() . $this->getFontsFilesBasePath();
     }
@@ -55,7 +56,7 @@ class AppKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function register(\Pimple\Container $container)
+    public function register(\Pimple\Container $container): void
     {
         parent::register($container);
         // Headless edition: do not remove API services

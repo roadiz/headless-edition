@@ -2,6 +2,7 @@
 <?php
 declare(strict_types=1);
 
+use App\AppKernel;
 use RZ\Roadiz\Console\RoadizApplication;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\ErrorHandler\Debug;
