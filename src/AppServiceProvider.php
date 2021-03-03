@@ -5,6 +5,7 @@ namespace App;
 
 use App\Controller\ContactFormController;
 use App\Controller\NullController;
+use App\EventSubscriber\CacheTagsBanSubscriber;
 use App\Serialization\BlockWalkerSubscriber;
 use App\Serialization\WalkerApiSubscriber;
 use App\TreeWalker\AutoChildrenNodeSourceWalker;
@@ -13,6 +14,7 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
@@ -20,6 +22,7 @@ use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Security\Http\AccessMap;
 use Symfony\Component\Security\Http\FirewallMap;
+use Themes\AbstractApiTheme\Cache\CacheTagsCollection;
 
 class AppServiceProvider implements ServiceProviderInterface
 {
@@ -83,6 +86,18 @@ class AppServiceProvider implements ServiceProviderInterface
                 4
             );
             return $subscribers;
+        });
+
+        $container->extend('dispatcher', function (EventDispatcherInterface $dispatcher, Container $c) {
+            if ($c['api.use_cache_tags'] === true) {
+                $dispatcher->addSubscriber(new CacheTagsBanSubscriber(
+                    $c['config'],
+                    new CacheTagsCollection(),
+                    $c['logger'],
+                    $c['kernel']->isDebug()
+                ));
+            }
+            return $dispatcher;
         });
 
         $container->extend('accessMap', function (AccessMap $accessMap, Container $c) {
