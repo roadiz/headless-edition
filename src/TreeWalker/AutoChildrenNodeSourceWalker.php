@@ -19,14 +19,16 @@ final class AutoChildrenNodeSourceWalker extends AbstractWalker
 {
     protected function initializeDefinitions(): void
     {
-        $context = $this->getContext();
-        if ($context instanceof NodeSourceWalkerContext) {
-            /** @var NodeTypeInterface $nodeType */
-            foreach ($context->getNodeTypesBag()->all() as $nodeType) {
-                $this->addDefinition(
-                    $nodeType->getSourceEntityFullQualifiedClassName(),
-                    $this->createDefinitionForNodeType($nodeType)
-                );
+        if ($this->isRoot()) {
+            $context = $this->getContext();
+            if ($context instanceof NodeSourceWalkerContext) {
+                /** @var NodeTypeInterface $nodeType */
+                foreach ($context->getNodeTypesBag()->all() as $nodeType) {
+                    $this->addDefinition(
+                        $nodeType->getSourceEntityFullQualifiedClassName(),
+                        $this->createDefinitionForNodeType($nodeType)
+                    );
+                }
             }
         }
     }
