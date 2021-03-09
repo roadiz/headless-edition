@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace App\Serialization;
 
 use Doctrine\Common\Cache\CacheProvider;
+use JMS\Serializer\Context;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
+use JMS\Serializer\Exclusion\DisjunctExclusionStrategy;
+use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use RZ\Roadiz\Core\Entities\NodesSources;
@@ -18,15 +21,8 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
      * @var class-string<AbstractWalker>
      */
     private string $walkerClass;
-    /**
-     * @var WalkerContextInterface
-     */
     private WalkerContextInterface $walkerContext;
-    /**
-     * @var CacheProvider
-     */
     private CacheProvider $cacheProvider;
-
     private int $maxLevel;
 
     /**
@@ -58,14 +54,32 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
         ]];
     }
 
+    private function getPropertyMetadata(Context $context): PropertyMetadata
+    {
+        $groups = array_unique(array_merge($context->getAttribute('groups'), [
+            'walker',
+            'children'
+        ]));
+        return new StaticPropertyMetadata(
+            'Collection',
+            'blocks',
+            [],
+            $groups
+        );
+    }
+
     public function onPostSerialize(ObjectEvent $event): void
     {
         $nodeSource = $event->getObject();
         $visitor = $event->getVisitor();
         $context = $event->getContext();
+        $exclusionStrategy = $event->getContext()->getExclusionStrategy() ?? new DisjunctExclusionStrategy();
+        $blocksProperty = $this->getPropertyMetadata($context);
 
-        if ($context->hasAttribute('groups') &&
-            in_array('nodes_sources', $context->getAttribute('groups'))) {
+        if (!$exclusionStrategy->shouldSkipProperty($blocksProperty, $context) &&
+            $context->hasAttribute('groups') &&
+            in_array('nodes_sources', $context->getAttribute('groups')) &&
+            !in_array('no_blocks', $context->getAttribute('groups'))) {
             if ($nodeSource instanceof NodesSources &&
                 null !== $nodeSource->getNode() &&
                 $visitor instanceof SerializationVisitorInterface &&
@@ -81,15 +95,7 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
                     $this->cacheProvider
                 );
                 $visitor->visitProperty(
-                    new StaticPropertyMetadata(
-                        'Collection',
-                        'blocks',
-                        [],
-                        array_merge($context->getAttribute('groups'), [
-                            'walker',
-                            'children'
-                        ])
-                    ),
+                    $blocksProperty,
                     $blockWalker->getChildren()
                 );
             }
