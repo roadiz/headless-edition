@@ -11,6 +11,7 @@ use JMS\Serializer\Exclusion\DisjunctExclusionStrategy;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
+use RZ\Roadiz\Contracts\NodeType\NodeTypeInterface;
 use RZ\Roadiz\Core\Entities\NodesSources;
 use RZ\TreeWalker\AbstractWalker;
 use RZ\TreeWalker\WalkerContextInterface;
@@ -56,7 +57,9 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
 
     private function getPropertyMetadata(Context $context): PropertyMetadata
     {
-        $groups = array_unique(array_merge($context->getAttribute('groups'), [
+        /** @var array<string> $groups */
+        $groups = $context->hasAttribute('groups') ? $context->getAttribute('groups') : [];
+        $groups = array_unique(array_merge($groups, [
             'walker',
             'children'
         ]));
@@ -68,37 +71,57 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onPostSerialize(ObjectEvent $event): void
+    private function supportsNodeType(?NodeTypeInterface $nodeType): bool
+    {
+        /*
+         * Customize here where block property is allowed. NodeType is for root entity.
+         */
+        return $nodeType !== null;
+    }
+
+    private function supports(ObjectEvent $event, PropertyMetadata $propertyMetadata): bool
     {
         $nodeSource = $event->getObject();
         $visitor = $event->getVisitor();
         $context = $event->getContext();
-        $exclusionStrategy = $event->getContext()->getExclusionStrategy() ?? new DisjunctExclusionStrategy();
+        $exclusionStrategy = $context->getExclusionStrategy() ?? new DisjunctExclusionStrategy();
+        /** @var array<string> $groups */
+        $groups = $context->hasAttribute('groups') ? $context->getAttribute('groups') : [];
+        /** @var NodeTypeInterface|null $nodeType */
+        $nodeType = $context->hasAttribute('nodeType') ? $context->getAttribute('nodeType') : null;
+
+        return !$exclusionStrategy->shouldSkipProperty($propertyMetadata, $context) &&
+            in_array('nodes_sources', $groups) &&
+            !in_array('no_blocks', $groups) &&
+            $this->supportsNodeType($nodeType) &&
+            $nodeSource instanceof NodesSources &&
+            null !== $nodeSource->getNode() &&
+            $visitor instanceof SerializationVisitorInterface &&
+            $nodeSource->getNode()->isPublished() &&
+            null !== $nodeSource->getNode()->getNodeType() &&
+            $nodeSource->getNode()->getNodeType()->isReachable();
+    }
+
+    public function onPostSerialize(ObjectEvent $event): void
+    {
+        $nodeSource = $event->getObject();
+        /** @var SerializationVisitorInterface $visitor */
+        $visitor = $event->getVisitor();
+        $context = $event->getContext();
         $blocksProperty = $this->getPropertyMetadata($context);
 
-        if (!$exclusionStrategy->shouldSkipProperty($blocksProperty, $context) &&
-            $context->hasAttribute('groups') &&
-            in_array('nodes_sources', $context->getAttribute('groups')) &&
-            !in_array('no_blocks', $context->getAttribute('groups'))) {
-            if ($nodeSource instanceof NodesSources &&
-                null !== $nodeSource->getNode() &&
-                $visitor instanceof SerializationVisitorInterface &&
-                $nodeSource->getNode()->isPublished() &&
-                null !== $nodeSource->getNode()->getNodeType() &&
-                $nodeSource->getNode()->getNodeType()->isReachable()
-            ) {
-                $blockNodeSourceWalkerClass = $this->walkerClass;
-                $blockWalker = $blockNodeSourceWalkerClass::build(
-                    $nodeSource,
-                    $this->walkerContext,
-                    $this->maxLevel,
-                    $this->cacheProvider
-                );
-                $visitor->visitProperty(
-                    $blocksProperty,
-                    $blockWalker->getChildren()
-                );
-            }
+        if ($this->supports($event, $blocksProperty)) {
+            $blockNodeSourceWalkerClass = $this->walkerClass;
+            $blockWalker = $blockNodeSourceWalkerClass::build(
+                $nodeSource,
+                $this->walkerContext,
+                $this->maxLevel,
+                $this->cacheProvider
+            );
+            $visitor->visitProperty(
+                $blocksProperty,
+                $blockWalker->getChildren()
+            );
         }
     }
 }
