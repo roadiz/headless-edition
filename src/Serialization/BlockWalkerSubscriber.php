@@ -4,19 +4,14 @@ declare(strict_types=1);
 namespace App\Serialization;
 
 use Doctrine\Common\Cache\CacheProvider;
-use JMS\Serializer\Context;
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
-use JMS\Serializer\Exclusion\DisjunctExclusionStrategy;
-use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
-use RZ\Roadiz\Contracts\NodeType\NodeTypeInterface;
-use RZ\Roadiz\Core\Entities\NodesSources;
 use RZ\TreeWalker\AbstractWalker;
 use RZ\TreeWalker\WalkerContextInterface;
+use Themes\AbstractApiTheme\Serialization\AbstractReachableNodesSourcesPostSerializationSubscriber;
 
-final class BlockWalkerSubscriber implements EventSubscriberInterface
+final class BlockWalkerSubscriber extends AbstractReachableNodesSourcesPostSerializationSubscriber
 {
     /**
      * @var class-string<AbstractWalker>
@@ -42,64 +37,13 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
         $this->walkerContext = $walkerContext;
         $this->cacheProvider = $cacheProvider;
         $this->maxLevel = $maxLevel;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function getSubscribedEvents()
-    {
-        return [[
-            'event' => 'serializer.post_serialize',
-            'method' => 'onPostSerialize',
-        ]];
-    }
-
-    private function getPropertyMetadata(Context $context): PropertyMetadata
-    {
-        /** @var array<string> $groups */
-        $groups = $context->hasAttribute('groups') ? $context->getAttribute('groups') : [];
-        $groups = array_unique(array_merge($groups, [
-            'walker',
-            'children'
-        ]));
-        return new StaticPropertyMetadata(
+        $this->propertyMetadata = new StaticPropertyMetadata(
             'Collection',
             'blocks',
             [],
-            $groups
+            ['children'] // This is groups to allow this property to be serialized
         );
-    }
-
-    private function supportsNodeType(?NodeTypeInterface $nodeType): bool
-    {
-        /*
-         * Customize here where block property is allowed. NodeType is for root entity.
-         */
-        return $nodeType !== null;
-    }
-
-    private function supports(ObjectEvent $event, PropertyMetadata $propertyMetadata): bool
-    {
-        $nodeSource = $event->getObject();
-        $visitor = $event->getVisitor();
-        $context = $event->getContext();
-        $exclusionStrategy = $context->getExclusionStrategy() ?? new DisjunctExclusionStrategy();
-        /** @var array<string> $groups */
-        $groups = $context->hasAttribute('groups') ? $context->getAttribute('groups') : [];
-        /** @var NodeTypeInterface|null $nodeType */
-        $nodeType = $context->hasAttribute('nodeType') ? $context->getAttribute('nodeType') : null;
-
-        return !$exclusionStrategy->shouldSkipProperty($propertyMetadata, $context) &&
-            in_array('nodes_sources', $groups) &&
-            !in_array('no_blocks', $groups) &&
-            $this->supportsNodeType($nodeType) &&
-            $nodeSource instanceof NodesSources &&
-            null !== $nodeSource->getNode() &&
-            $visitor instanceof SerializationVisitorInterface &&
-            $nodeSource->getNode()->isPublished() &&
-            null !== $nodeSource->getNode()->getNodeType() &&
-            $nodeSource->getNode()->getNodeType()->isReachable();
+        $this->propertyMetadata->skipWhenEmpty = true;
     }
 
     public function onPostSerialize(ObjectEvent $event): void
@@ -107,10 +51,8 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
         $nodeSource = $event->getObject();
         /** @var SerializationVisitorInterface $visitor */
         $visitor = $event->getVisitor();
-        $context = $event->getContext();
-        $blocksProperty = $this->getPropertyMetadata($context);
 
-        if ($this->supports($event, $blocksProperty)) {
+        if ($this->supports($event, $this->propertyMetadata)) {
             $blockNodeSourceWalkerClass = $this->walkerClass;
             $blockWalker = $blockNodeSourceWalkerClass::build(
                 $nodeSource,
@@ -119,7 +61,7 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
                 $this->cacheProvider
             );
             $visitor->visitProperty(
-                $blocksProperty,
+                $this->propertyMetadata,
                 $blockWalker->getChildren()
             );
         }
