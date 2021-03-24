@@ -25,7 +25,7 @@ example_test:
         - composer install --no-scripts
         - composer run-script post-install-cmd
         - php -d memory_limit=-1 vendor/bin/phpcs
-        - php -d memory_limit=-1 vendor/bin/phpstan analyse -c phpstan.neon -l max src
+        - php -d memory_limit=-1 vendor/bin/phpstan analyse -c phpstan.neon
 
 example_build:
     stage: build
