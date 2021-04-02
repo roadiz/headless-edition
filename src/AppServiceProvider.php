@@ -56,7 +56,7 @@ class AppServiceProvider implements ServiceProviderInterface
             'allow_origin' => ['*'],
             'allow_headers' => true,
             'origin_regex' => false,
-            'allow_methods' => ['GET'],
+            'allow_methods' => ['GET', 'POST'], // Allow POST for contact-forms
             'expose_headers' => ['Link'],
             'max_age' => 60*60*24
         ];
