@@ -7,12 +7,18 @@ use App\Model\NodesSourcesHead;
 use App\Model\NodesSourcesHeadFactory;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use Themes\AbstractApiTheme\Serialization\AbstractReachableNodesSourcesPostSerializationSubscriber;
 
 final class NodesSourcesHeadSubscriber extends AbstractReachableNodesSourcesPostSerializationSubscriber
 {
     private NodesSourcesHeadFactory $nodesSourcesHeadFactory;
+
+    protected function atRoot(): bool
+    {
+        return true;
+    }
 
     /**
      * @param NodesSourcesHeadFactory $nodesSourcesHeadFactory
@@ -36,8 +42,13 @@ final class NodesSourcesHeadSubscriber extends AbstractReachableNodesSourcesPost
         $nodeSource = $event->getObject();
         /** @var SerializationVisitorInterface $visitor */
         $visitor = $event->getVisitor();
+        /** @var SerializationContext $context */
+        $context = $event->getContext();
 
         if ($this->supports($event, $this->propertyMetadata)) {
+            if ($context->hasAttribute('locks')) {
+                $context->getAttribute('locks')->add(static::class);
+            }
             $head = $this->nodesSourcesHeadFactory->createForNodeSource($nodeSource);
             $visitor->visitProperty(
                 $this->propertyMetadata,

@@ -6,6 +6,7 @@ namespace App\Serialization;
 use Doctrine\Common\Cache\CacheProvider;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use RZ\TreeWalker\AbstractWalker;
 use RZ\TreeWalker\WalkerContextInterface;
@@ -20,6 +21,11 @@ final class BlockWalkerSubscriber extends AbstractReachableNodesSourcesPostSeria
     private WalkerContextInterface $walkerContext;
     private CacheProvider $cacheProvider;
     private int $maxLevel;
+
+    protected function atRoot(): bool
+    {
+        return true;
+    }
 
     /**
      * @param class-string<AbstractWalker> $walkerClass
@@ -51,8 +57,13 @@ final class BlockWalkerSubscriber extends AbstractReachableNodesSourcesPostSeria
         $nodeSource = $event->getObject();
         /** @var SerializationVisitorInterface $visitor */
         $visitor = $event->getVisitor();
+        /** @var SerializationContext $context */
+        $context = $event->getContext();
 
         if ($this->supports($event, $this->propertyMetadata)) {
+            if ($context->hasAttribute('locks')) {
+                $context->getAttribute('locks')->add(static::class);
+            }
             $blockNodeSourceWalkerClass = $this->walkerClass;
             $blockWalker = $blockNodeSourceWalkerClass::build(
                 $nodeSource,
