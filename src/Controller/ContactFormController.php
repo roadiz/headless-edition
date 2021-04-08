@@ -13,7 +13,6 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 final class ContactFormController
 {
     private ContactFormManager $contactFormManager;
-
     private RateLimiterFactory $rateLimiterFactory;
 
     /**

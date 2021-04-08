@@ -7,7 +7,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV APP_ENV=dev
 ENV APP_CACHE=0
 
-RUN apk add --no-cache git openssh \
+RUN apk add --no-cache git openssh make \
     && echo "USER_UID: ${USER_UID}\n" \
     && usermod -u ${USER_UID} www-data \
     && groupmod -g ${USER_UID} www-data \

@@ -12,7 +12,6 @@ variables:
 
 example_test:
     stage: test
-    image: roadiz/php80-runner
     interruptible: true
     only:
         - develop
@@ -24,12 +23,11 @@ example_test:
     script:
         - composer install --no-scripts
         - composer run-script post-install-cmd
-        - vendor/bin/phpcs
-        - vendor/bin/phpstan analyse -c phpstan.neon -l max src
+        - php -d memory_limit=-1 vendor/bin/phpcs
+        - php -d memory_limit=-1 vendor/bin/phpstan analyse -c phpstan.neon
 
 example_build:
     stage: build
-    image: roadiz/php80-runner
     interruptible: true
     only:
         - develop

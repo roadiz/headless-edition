@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 use App\AppKernel;
 //use App\DevAppKernel;
-use RZ\Roadiz\Core\Events\Cache\CachePurgeAssetsRequestEvent;
 use RZ\Roadiz\Core\Events\Cache\CachePurgeRequestEvent;
 use RZ\Roadiz\Core\HttpFoundation\Request;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -49,7 +48,6 @@ $kernel->get('requestStack')->push($request);
 $dispatcher = $kernel->get('dispatcher');
 $event = new CachePurgeRequestEvent($kernel);
 $dispatcher->dispatch($event);
-$dispatcher->dispatch(new CachePurgeAssetsRequestEvent($kernel));
 
 $text = [
     'status' => 'ok',

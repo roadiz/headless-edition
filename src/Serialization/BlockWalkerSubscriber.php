@@ -4,30 +4,28 @@ declare(strict_types=1);
 namespace App\Serialization;
 
 use Doctrine\Common\Cache\CacheProvider;
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
-use RZ\Roadiz\Core\Entities\NodesSources;
 use RZ\TreeWalker\AbstractWalker;
 use RZ\TreeWalker\WalkerContextInterface;
+use Themes\AbstractApiTheme\Serialization\AbstractReachableNodesSourcesPostSerializationSubscriber;
 
-final class BlockWalkerSubscriber implements EventSubscriberInterface
+final class BlockWalkerSubscriber extends AbstractReachableNodesSourcesPostSerializationSubscriber
 {
     /**
      * @var class-string<AbstractWalker>
      */
     private string $walkerClass;
-    /**
-     * @var WalkerContextInterface
-     */
     private WalkerContextInterface $walkerContext;
-    /**
-     * @var CacheProvider
-     */
     private CacheProvider $cacheProvider;
-
     private int $maxLevel;
+
+    protected function atRoot(): bool
+    {
+        return true;
+    }
 
     /**
      * @param class-string<AbstractWalker> $walkerClass
@@ -45,54 +43,38 @@ final class BlockWalkerSubscriber implements EventSubscriberInterface
         $this->walkerContext = $walkerContext;
         $this->cacheProvider = $cacheProvider;
         $this->maxLevel = $maxLevel;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function getSubscribedEvents()
-    {
-        return [[
-            'event' => 'serializer.post_serialize',
-            'method' => 'onPostSerialize',
-        ]];
+        $this->propertyMetadata = new StaticPropertyMetadata(
+            'Collection',
+            'blocks',
+            [],
+            ['children'] // This is groups to allow this property to be serialized
+        );
+        $this->propertyMetadata->skipWhenEmpty = true;
     }
 
     public function onPostSerialize(ObjectEvent $event): void
     {
         $nodeSource = $event->getObject();
+        /** @var SerializationVisitorInterface $visitor */
         $visitor = $event->getVisitor();
+        /** @var SerializationContext $context */
         $context = $event->getContext();
 
-        if ($context->hasAttribute('groups') &&
-            in_array('nodes_sources', $context->getAttribute('groups'))) {
-            if ($nodeSource instanceof NodesSources &&
-                null !== $nodeSource->getNode() &&
-                $visitor instanceof SerializationVisitorInterface &&
-                $nodeSource->getNode()->isPublished() &&
-                null !== $nodeSource->getNode()->getNodeType() &&
-                $nodeSource->getNode()->getNodeType()->isReachable()
-            ) {
-                $blockNodeSourceWalkerClass = $this->walkerClass;
-                $blockWalker = $blockNodeSourceWalkerClass::build(
-                    $nodeSource,
-                    $this->walkerContext,
-                    $this->maxLevel,
-                    $this->cacheProvider
-                );
-                $visitor->visitProperty(
-                    new StaticPropertyMetadata(
-                        'Collection',
-                        'blocks',
-                        [],
-                        array_merge($context->getAttribute('groups'), [
-                            'walker',
-                            'children'
-                        ])
-                    ),
-                    $blockWalker->getChildren()
-                );
+        if ($this->supports($event, $this->propertyMetadata)) {
+            if ($context->hasAttribute('locks')) {
+                $context->getAttribute('locks')->add(static::class);
             }
+            $blockNodeSourceWalkerClass = $this->walkerClass;
+            $blockWalker = $blockNodeSourceWalkerClass::build(
+                $nodeSource,
+                $this->walkerContext,
+                $this->maxLevel,
+                $this->cacheProvider
+            );
+            $visitor->visitProperty(
+                $this->propertyMetadata,
+                $blockWalker->getChildren()
+            );
         }
     }
 }
