@@ -176,7 +176,7 @@ class AppServiceProvider implements ServiceProviderInterface
             );
         };
         $container[NodesSourcesHeadFactory::class] = function (Container $c) {
-            return new NodesSourcesHeadFactory($c['settingsBag']);
+            return new NodesSourcesHeadFactory($c['settingsBag'], $c['router'], $c['nodeSourceApi']);
         };
         $container[BreadcrumbsFactoryInterface::class] = function (Container $c) {
             return new NaiveBreadcrumbsFactory();

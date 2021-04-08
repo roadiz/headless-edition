@@ -14,13 +14,9 @@ use Symfony\Component\Stopwatch\Stopwatch;
 final class NodeSourceWalkerContext implements WalkerContextInterface
 {
     private Stopwatch $stopwatch;
-
     private NodeTypes $nodeTypesBag;
-
     private NodeSourceApi $nodeSourceApi;
-
     private RequestStack $requestStack;
-
     private EntityManagerInterface $entityManager;
 
     /**

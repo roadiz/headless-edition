@@ -3,28 +3,34 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use RZ\Roadiz\CMS\Utils\NodeSourceApi;
 use RZ\Roadiz\Core\Bags\Settings;
 use RZ\Roadiz\Core\Entities\NodesSources;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class NodesSourcesHeadFactory
 {
     private Settings $settingsBag;
+    private UrlGeneratorInterface $urlGenerator;
+    private NodeSourceApi $nodeSourceApi;
 
     /**
      * @param Settings $settingsBag
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param NodeSourceApi $nodeSourceApi
      */
-    public function __construct(Settings $settingsBag)
-    {
+    public function __construct(
+        Settings $settingsBag,
+        UrlGeneratorInterface $urlGenerator,
+        NodeSourceApi $nodeSourceApi
+    ) {
         $this->settingsBag = $settingsBag;
+        $this->urlGenerator = $urlGenerator;
+        $this->nodeSourceApi = $nodeSourceApi;
     }
 
     public function createForNodeSource(NodesSources $nodesSources): NodesSourcesHead
     {
-        $head = new NodesSourcesHead($nodesSources);
-        $head->setGoogleAnalytics($this->settingsBag->get('universal_analytics_id', null));
-        $head->setGoogleTagManager($this->settingsBag->get('google_tag_manager_id', null));
-        $head->setSiteName($this->settingsBag->get('site_name', null));
-        $head->setMainColor($this->settingsBag->get('main_color', null));
-        return $head;
+        return new NodesSourcesHead($nodesSources, $this->settingsBag, $this->urlGenerator, $this->nodeSourceApi);
     }
 }
