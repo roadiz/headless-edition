@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App;
 
 use RZ\Roadiz\Core\Kernel;
+use Themes\AbstractApiTheme\Services\AbstractApiServiceProvider;
 
 /**
  * Customize Roadiz kernel with your own project settings.
@@ -60,8 +61,8 @@ class AppKernel extends Kernel
     {
         parent::register($container);
         // Headless edition: do not remove API services
-        $container->register(new \Themes\AbstractApiTheme\Services\AbstractApiServiceProvider());
-        $container->register(new \App\AppServiceProvider());
+        $container->register(new AbstractApiServiceProvider());
+        $container->register(new AppServiceProvider());
 
         /*
          * Add your own service providers.
