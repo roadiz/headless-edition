@@ -108,6 +108,11 @@
 								"key": "Accept",
 								"type": "text",
 								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -171,6 +176,11 @@
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost",
 								"type": "text"
 							}
 						],
@@ -449,8 +459,9 @@
 									"type": "text"
 								},
 								{
-									"key": "recaptcha",
+									"key": "g-recaptcha-response",
 									"value": "",
+									"description": "Recaptcha challenge token",
 									"type": "text",
 									"disabled": true
 								}
@@ -495,7 +506,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/1.0/nodes-sources?_preview=1&order[node.position]=asc",
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources?_preview=1&order[node.position]=asc&node.bNodes.nodeB=about-us&node.bNodes.field.name=page_reference",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -541,6 +552,29 @@
 								{
 									"key": "tags",
 									"value": "project",
+									"disabled": true
+								},
+								{
+									"key": "node.home",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "node.bNodes.nodeB",
+									"value": "about-us"
+								},
+								{
+									"key": "node.bNodes.field.name",
+									"value": "page_reference"
+								},
+								{
+									"key": "node.aNodes.nodeA",
+									"value": "about-us",
+									"disabled": true
+								},
+								{
+									"key": "node.aNodes.field.name",
+									"value": "page_reference",
 									"disabled": true
 								}
 							]
@@ -709,18 +743,22 @@
 	],
 	"variable": [
 		{
+			"id": "74ed4b3d-876c-4830-b27e-c06842c109da",
 			"key": "baseUrl",
 			"value": "http://headless.test/dev.php"
 		},
 		{
+			"id": "7fd0dc83-434f-48e3-afbf-87d5bfa9fa3a",
 			"key": "token",
 			"value": ""
 		},
 		{
+			"id": "8c47ec8c-f57a-41ab-8f7e-46c2a0b0eae6",
 			"key": "clientId",
 			"value": ""
 		},
 		{
+			"id": "b7f07e97-1a83-4bab-b7b7-96c92a139aeb",
 			"key": "apiKey",
 			"value": ""
 		}

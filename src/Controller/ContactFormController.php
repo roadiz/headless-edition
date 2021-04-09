@@ -60,7 +60,7 @@ final class ContactFormController
         $this->contactFormManager
             ->withDefaultFields()
             ->withUserConsent()
-            ->withGoogleRecaptcha()
+            ->withGoogleRecaptcha('g-recaptcha-response')
         ;
 
         if (null !== $response = $this->contactFormManager->handle()) {
