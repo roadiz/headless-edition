@@ -17,7 +17,8 @@
     "suggest": {
         "sentry/sentry": "Allows monolog to send your log messages to a Sentry instance.",
         "php-http/guzzle7-adapter": "Required for sentry/sentry",
-        "guzzlehttp/psr7": "Required for sentry/sentry"
+        "guzzlehttp/psr7": "Required for sentry/sentry",
+        "http-interop/http-factory-guzzle": "Required for sentry/sentry"
     },
     "license": "MIT",
     "authors": [
