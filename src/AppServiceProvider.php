@@ -46,7 +46,7 @@ class AppServiceProvider implements ServiceProviderInterface
         /**
          * @return bool Displays cache tags in response headers.
          */
-        $container['api.use_cache_tags'] = false;
+        $container['api.use_cache_tags'] = true;
 
         /**
          * @return array
