@@ -7,9 +7,15 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
+use RZ\Roadiz\Core\AbstractEntities\AbstractEntity;
+use RZ\Roadiz\Core\Entities\Document;
 use RZ\Roadiz\Core\Entities\Node;
+use RZ\Roadiz\Core\Entities\Tag;
+use RZ\Roadiz\Core\Events\DocumentTranslationUpdatedEvent;
+use RZ\Roadiz\Core\Events\DocumentUpdatedEvent;
 use RZ\Roadiz\Core\Events\Node\NodeUpdatedEvent;
 use RZ\Roadiz\Core\Events\NodesSources\NodesSourcesUpdatedEvent;
+use RZ\Roadiz\Core\Events\Tag\TagUpdatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Themes\AbstractApiTheme\Cache\CacheTagsCollection;
 
@@ -20,12 +26,6 @@ final class CacheTagsBanSubscriber implements EventSubscriberInterface
     private LoggerInterface $logger;
     private CacheTagsCollection $cacheTagsCollection;
 
-    /**
-     * @param array $configuration
-     * @param bool $debug
-     * @param LoggerInterface $logger
-     * @param CacheTagsCollection $cacheTagsCollection
-     */
     public function __construct(
         array $configuration,
         CacheTagsCollection $cacheTagsCollection,
@@ -46,6 +46,9 @@ final class CacheTagsBanSubscriber implements EventSubscriberInterface
         return [
             NodeUpdatedEvent::class => ['onNodeUpdated'],
             NodesSourcesUpdatedEvent::class => ['onNodesSourcesUpdated'],
+            TagUpdatedEvent::class => ['onTagUpdated'],
+            DocumentUpdatedEvent::class => ['onDocumentUpdated'],
+            DocumentTranslationUpdatedEvent::class => ['onDocumentTranslationUpdated'],
         ];
     }
 
@@ -64,7 +67,38 @@ final class CacheTagsBanSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->banCacheTag($event->getNode());
+        $this->banCacheTag($event->getNode(), $event->getNode()->getNodeName());
+    }
+
+    public function onTagUpdated(TagUpdatedEvent $event): void
+    {
+        if (!$this->supportConfig()) {
+            return;
+        }
+
+        $this->banCacheTag($event->getTag(), $event->getTag()->getTagName());
+    }
+
+    public function onDocumentUpdated(DocumentUpdatedEvent $event): void
+    {
+        if (!$this->supportConfig()) {
+            return;
+        }
+        $document = $event->getDocument();
+        if ($document instanceof Document) {
+            $this->banCacheTag($document, (string) $document);
+        }
+    }
+
+    public function onDocumentTranslationUpdated(DocumentTranslationUpdatedEvent $event): void
+    {
+        if (!$this->supportConfig()) {
+            return;
+        }
+        $document = $event->getDocument();
+        if ($document instanceof Document) {
+            $this->banCacheTag($document, (string) $document);
+        }
     }
 
     public function onNodesSourcesUpdated(NodesSourcesUpdatedEvent $event): void
@@ -74,12 +108,25 @@ final class CacheTagsBanSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->banCacheTag($event->getNodeSource()->getNode());
+        $this->banCacheTag(
+            $event->getNodeSource()->getNode(),
+            $event->getNodeSource()->getNode()->getNodeName()
+        );
     }
 
-    private function createBanRequests(Node $node): array
+    private function createBanRequests(AbstractEntity $entity): array
     {
-        $cacheTag = $this->cacheTagsCollection->getCacheTagForNode($node);
+        if ($entity instanceof Node) {
+            $cacheTag = $this->cacheTagsCollection->getCacheTagForNode($entity);
+        } elseif ($entity instanceof Document) {
+            $cacheTag = $this->cacheTagsCollection->getCacheTagForDocument($entity);
+        } elseif ($entity instanceof Tag) {
+            $cacheTag = $this->cacheTagsCollection->getCacheTagForTag($entity);
+        } else {
+            throw new \InvalidArgumentException(
+                'Cache-tag invalidation only supports Node, Document and Tag entities.'
+            );
+        }
         $requests = [];
         foreach ($this->configuration['reverseProxyCache']['frontend'] as $name => $frontend) {
             $requests[$name] = new Request(
@@ -94,16 +141,16 @@ final class CacheTagsBanSubscriber implements EventSubscriberInterface
         return $requests;
     }
 
-    private function banCacheTag(Node $node): void
+    private function banCacheTag(AbstractEntity $entity, string $identifier): void
     {
         try {
-            foreach ($this->createBanRequests($node) as $name => $request) {
+            foreach ($this->createBanRequests($entity) as $name => $request) {
                 (new Client())->send($request, [
                     'debug' => $this->debug
                 ]);
                 $this->logger->debug(sprintf(
-                    'Reverse proxy cache-tag for node "%s" banned.',
-                    $node->getNodeName()
+                    'Reverse proxy cache-tag for entity "%s" banned.',
+                    $identifier
                 ));
             }
         } catch (GuzzleException $e) {
