@@ -47,8 +47,6 @@ services:
         build:
             # Use Nginx
             context: ./docker/php-nginx-alpine
-            # Use Apache
-            #context: ./docker/php74-apache
             args:
                 USER_UID: ${USER_UID}
         ports:
