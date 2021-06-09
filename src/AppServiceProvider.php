@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controller\CommonContentController;
 use App\Controller\ContactFormController;
 use App\Controller\NullController;
 use App\EventSubscriber\CacheTagsBanSubscriber;
@@ -12,6 +13,7 @@ use App\Serialization\NodesSourcesHeadSubscriber;
 use App\Serialization\WalkerApiSubscriber;
 use App\TreeWalker\AutoChildrenNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
+use JMS\Serializer\Serializer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -27,6 +29,7 @@ use Symfony\Component\Security\Http\FirewallMap;
 use Themes\AbstractApiTheme\Breadcrumbs\BreadcrumbsFactoryInterface;
 use Themes\AbstractApiTheme\Breadcrumbs\NaiveBreadcrumbsFactory;
 use Themes\AbstractApiTheme\Cache\CacheTagsCollection;
+use Themes\AbstractApiTheme\Serialization\SerializationContextFactoryInterface;
 
 class AppServiceProvider implements ServiceProviderInterface
 {
@@ -180,6 +183,18 @@ class AppServiceProvider implements ServiceProviderInterface
         };
         $container[BreadcrumbsFactoryInterface::class] = function (Container $c) {
             return new NaiveBreadcrumbsFactory();
+        };
+        $container[CommonContentController::class] = function (Container $c) {
+            return new CommonContentController(
+                $c[Serializer::class],
+                $c['em'],
+                $c[SerializationContextFactoryInterface::class],
+                $c['nodeSourceApi'],
+                $c[NodeSourceWalkerContext::class],
+                $c['nodesSourcesUrlCacheProvider'],
+                $c['urlGenerator'],
+                $c[NodesSourcesHeadFactory::class]
+            );
         };
     }
 }

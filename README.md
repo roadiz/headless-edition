@@ -45,6 +45,66 @@ your node-types children fields to create a JSON graph when requesting a single 
 
 Automatic node-source controller resolution is disabled and any request on a node-source path will end up in `src/Controller/NullController.php`, so your application clients have to use your secure API end-points.
 
+### Boilerplate for exposing content API for static-site generators
+
+Headless edition has been built to work with a *NuxtJS* application and minimizing API calls.
+
+The most important call you'll make is the *Get single node-source by path* which combine searching a node-source by its path **and** fetching its content
+in **single** data context.
+
+To retrieve homepage, you can execute `GET /api/1.0/nodes-sources/by-path?path=/`:
+
+```json
+{
+    "slug": "homepage",
+    "@type": "Page",
+    "node": {
+        "nodeName": "homepage",
+        "home": true,
+        "visible": true,
+        "tags": [],
+        "attributeValues": []
+    },
+    "translation": {
+        "locale": "en"
+    },
+    "urlAliases": [],
+    "title": "Homepage",
+    "metaTitle": "Homepage – Headless",
+    "metaKeywords": "",
+    "metaDescription": "Homepage – Headless",
+    "url": "/dev.php/",
+    "@id": "http://headless.test/dev.php/api/1.0/page/2/en",
+    "head": {
+        "siteName": "Headless",
+        "homePageUrl": "/dev.php/"
+    }
+}
+```
+
+This is way more efficient than executing :
+
+- `/api/1.0/nodes-sources?path=/` which is a *hydra:Collection* response
+- and then once you know `@id`, you can request a single node-source response: `/api/1.0/page/2/en`
+
+---
+
+You'll find some boilerplate models and controller for serving *common contents* for building menus and finding social links.
+For example: `/api/1.0/common` will expose `CommonContentResponse` model which can be customized to expose some useful data that could be painful to fetch
+through *NodesSources* API endpoints, such as hierarchical menu views, or *Roadiz* settings.
+
+```json
+{
+    "mainMenuWalker": {
+        "children": [],
+        "@type": "MenuNodeSourceWalker"
+    },
+    "head": {
+        "siteName": "Headless"
+    }
+}
+```
+
 ## Usage
 
 ```bash

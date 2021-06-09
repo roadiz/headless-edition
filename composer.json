@@ -5,7 +5,7 @@
     "require": {
         "php": ">=7.4",
         "roadiz/roadiz": "~1.6.7",
-        "roadiz/abstract-api-theme": "~3.1.9",
+        "roadiz/abstract-api-theme": "~3.1.12",
         "rezozero/tree-walker": "~0.8.4",
         "symfony/rate-limiter": "^5.2"
     },
