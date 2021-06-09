@@ -73,11 +73,11 @@ To retrieve homepage, you can execute `GET /api/1.0/nodes-sources/by-path?path=/
     "metaTitle": "Homepage – Headless",
     "metaKeywords": "",
     "metaDescription": "Homepage – Headless",
-    "url": "/dev.php/",
-    "@id": "http://headless.test/dev.php/api/1.0/page/2/en",
+    "url": "/",
+    "@id": "http://headless.test/api/1.0/page/2/en",
     "head": {
         "siteName": "Headless",
-        "homePageUrl": "/dev.php/"
+        "homePageUrl": "/"
     }
 }
 ```
@@ -97,10 +97,22 @@ through *NodesSources* API endpoints, such as hierarchical menu views, or *Roadi
 {
     "mainMenuWalker": {
         "children": [],
+        "item": {
+            "slug": "main-menu",
+            "@type": "Neutral",
+            "node": {
+                "nodeName": "main-menu",
+                "visible": false,
+                "tags": []
+            },
+            "title": "Main menu",
+            "@id": "http://headless.test/api/1.0/neutral/1/en"
+        },
         "@type": "MenuNodeSourceWalker"
     },
     "head": {
-        "siteName": "Headless"
+        "siteName": "Headless",
+        "homePageUrl": "/"
     }
 }
 ```
