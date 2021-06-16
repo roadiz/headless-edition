@@ -21,7 +21,6 @@ final class CommonContentResponse
      * @Serializer\Exclude
      */
     private ?WalkerInterface $mainMenuWalker = null;
-
     /**
      * @var WalkerContextInterface
      * @Serializer\Exclude
