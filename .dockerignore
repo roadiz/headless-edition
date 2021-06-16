@@ -51,6 +51,7 @@ pimple.json
 !app/gen-src/GeneratedNodeSources/.gitignore
 !app/gen-src/Proxies/.gitignore
 !docker/php-nginx-alpine/crontab.txt
+!docker/php-nginx-alpine/supervisord.ini
 !docker/php-nginx-alpine/before_launch.sh
 !themes/BaseTheme/static
 !themes/BaseTheme/Resources/views/partials/*

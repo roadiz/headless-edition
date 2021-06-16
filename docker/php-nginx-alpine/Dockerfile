@@ -24,6 +24,8 @@ RUN apk add --no-cache git openssh make \
 
 # Display errors
 ADD php.ini /usr/local/etc/php/php.ini
+# Added Roadiz messenger for async tasks
+ADD supervisor.ini /etc/supervisor.d/services.ini
 ADD zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 ADD crontab.txt /crontab.txt
 ADD before_launch.sh /before_launch.sh
@@ -31,7 +33,7 @@ ADD before_launch.sh /before_launch.sh
 VOLUME /var/www/html
 WORKDIR /var/www/html
 
-RUN ln -s /usr/share/nginx/html/bin/roadiz /usr/local/bin/roadiz \
+RUN ln -s /var/www/html/bin/roadiz /usr/local/bin/roadiz \
     && /usr/bin/crontab -u www-data /crontab.txt \
     && chmod +x /before_launch.sh \
     && chown -R www-data:www-data /var/www/html/
