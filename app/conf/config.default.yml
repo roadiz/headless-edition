@@ -76,6 +76,29 @@ messenger:
         RZ\Roadiz\Message\AsyncMessage: async
 
 #
+# Reverse proxy invalidation
+#
+reverseProxyCache:
+    frontend:
+        varnish:
+            host: '%env(string:VARNISH_HOST)%'
+            domainName: '%env(string:VARNISH_DOMAIN)%'
+
+#
+# Monolog configuration
+#
+monolog:
+    handlers:
+        default:
+            type: rotating_file
+            path: '%kernel.log_dir%/roadiz.log'
+            level: INFO
+#        sentry:
+#            type: sentry
+#            level: WARNING
+#            url: '%env(string:APP_SENTRY_DSN)%'
+
+#
 # Solr endpoint example
 #
 #solr:
@@ -89,25 +112,3 @@ messenger:
 #            username: ""
 #            password: ""
 
-#
-# Reverse proxy invalidation
-#
-#reverseProxyCache:
-#    frontend:
-#        varnish:
-#            host: '%env(string:VARNISH_HOST)%'
-#            domainName: '%env(string:VARNISH_DOMAIN)%'
-
-#
-# Monolog non-default configuration
-#
-#monolog:
-#    handlers:
-#        default:
-#            type: rotating_file
-#            path: '%kernel.log_dir%/roadiz.log'
-#            level: DEBUG
-#        sentry:
-#            type: sentry
-#            level: WARNING
-#            url: '%env(string:APP_SENTRY_DSN)%'

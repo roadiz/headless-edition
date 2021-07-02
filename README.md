@@ -119,6 +119,26 @@ through *NodesSources* API endpoints, such as hierarchical menu views, or *Roadi
 
 ## Usage
 
+### Use ready-to-go Docker image
+If you do not need any custom code or to version your content schema, you can launch a Roadiz headless with our
+Docker standalone image and our `docker-compose.standalone.yml` example stack.
+
+Override ./app/conf/config.yaml file if necessary (for Solr configuration or custom monolog handler)
+
+```bash
+docker-compose up -d --force-recreate
+docker-compose exec -u www-data app bin/roadiz migration:migrate --allow-no-migration -n
+docker-compose exec -u www-data app bin/roadiz install -n --env=install 
+docker-compose exec -u www-data app bin/roadiz generate:private-key
+docker-compose up -d --force-recreate --no-deps app varnish
+docker-compose exec -u www-data app bin/roadiz users:create -m johndoe@roadiz.io -b -s -p "supersecretpassword" johndoe 
+```
+
+Then browse to `https://headless.test/rz-admin` and build your headless API.
+
+### Create a new custom project
+For custom projects we recommend starting from a dedicated repository:
+
 ```bash
 # Create a new Roadiz project on develop branch
 composer create-project roadiz/headless-edition;
@@ -144,6 +164,11 @@ nano .env;
 docker-compose build;
 # Create and start containers
 docker-compose up -d;
+# Initialize database and base content
+docker-compose exec -u www-data app bin/roadiz migration:migrate --allow-no-migration -n
+docker-compose exec -u www-data app bin/roadiz install -n --env=install 
+# Restart to empty caches
+docker-compose up -d --force-recreate --no-deps app varnish
 ```
 
 ##### Issue with Solr container

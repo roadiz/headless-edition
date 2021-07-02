@@ -28,6 +28,12 @@ dev-server:
 migrate:
 	php bin/roadiz themes:migrate src/Resources/config.yml;
 
+build-docker:
+	rm -f composer.lock
+	docker-compose exec -u www-data app composer install --optimize-autoloader --apcu-autoloader;
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:develop .
+	docker buildx build --push --platform linux/amd64 --tag roadiz/varnish:develop ./docker/varnish
+
 ngrok:
 	ngrok http ${DEV_DOMAIN}
 
