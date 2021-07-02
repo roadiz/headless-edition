@@ -15,6 +15,7 @@ README.md
 Dockerfile
 Dockerfile.archive
 docker-compose.yml
+docker-compose.standalone.yml
 Headless Roadiz API.postman_collection.json
 
 */temp*
@@ -48,6 +49,9 @@ web/files/*
 */*.log
 Vagrantfile
 pimple.json
+supervisord.pid
+project_env.sh
+.phpcs-cache
 
 !vendor
 !app/gen-src/GeneratedNodeSources/.gitignore
