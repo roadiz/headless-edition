@@ -15,6 +15,7 @@ use App\TreeWalker\NodeSourceWalkerContext;
 use JMS\Serializer\Serializer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestMatcher;
@@ -151,7 +152,7 @@ class AppServiceProvider implements ServiceProviderInterface
                 'policy' => 'token_bucket',
                 'limit' => 5,
                 'rate' => ['interval' => '1 minute'],
-            ], new CacheStorage(new ApcuAdapter($c['config']['appNamespace'])));
+            ], new CacheStorage($c[CacheItemPoolInterface::class]));
         };
 
         /*
