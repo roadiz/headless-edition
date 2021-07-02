@@ -72,9 +72,8 @@ messenger:
         failed_default:
             dsn: 'doctrine://default?queue_name=failed_default'
             options: []
-#    routing:
-#        RZ\Roadiz\Message\GuzzleRequestMessage: async
-
+    routing:
+        RZ\Roadiz\Message\AsyncMessage: async
 
 #
 # Solr endpoint example
