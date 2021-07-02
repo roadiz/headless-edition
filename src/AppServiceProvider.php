@@ -16,7 +16,6 @@ use JMS\Serializer\Serializer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\RateLimiter\RateLimiterFactory;

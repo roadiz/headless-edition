@@ -136,6 +136,9 @@ docker-compose exec -u www-data app bin/roadiz users:create -m johndoe@roadiz.io
 
 Then browse to `https://headless.test/rz-admin` and build your headless API.
 
+Standalone code is configured to create a `CommonContentResponse` from a `main-menu` node. If you need to customize
+common content responses, we invite you to create a custom project.
+
 ### Create a new custom project
 For custom projects we recommend starting from a dedicated repository:
 
