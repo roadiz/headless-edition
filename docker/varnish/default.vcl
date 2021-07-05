@@ -1,10 +1,5 @@
-#
-# This is an example VCL file for Varnish.
-#
-# It does not do anything by default, delegating control to the
-# builtin VCL. The builtin VCL is called when there is no explicit
-# return statement.
-#
+import boltsort;
+
 # See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
 # and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
 
@@ -25,6 +20,10 @@ acl local {
 }
 
 sub vcl_recv {
+    # Sort query string params
+    # https://www.fastly.com/blog/using-boltsort-make-api-caching-more-efficient
+    set req.url = boltsort.sort(req.url);
+
     if (req.http.X-Forwarded-Proto == "https" ) {
         set req.http.X-Forwarded-Port = "443";
     } else {
