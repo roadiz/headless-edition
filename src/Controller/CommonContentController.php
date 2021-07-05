@@ -166,9 +166,7 @@ final class CommonContentController
             'Accept-Encoding',
             'Accept',
             'Authorization',
-            'x-api-key',
-            'Referer',
-            'Origin'
+            'x-api-key'
         ]));
         if ($request->isMethodCacheable()) {
             $response->setTtl($menuResponse->getTtl());
