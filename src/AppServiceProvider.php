@@ -34,24 +34,24 @@ class AppServiceProvider implements ServiceProviderInterface
      * @inheritDoc
      * @return void
      */
-    public function register(Container $container)
+    public function register(Container $pimple)
     {
         /**
          * @return int in minutes
          */
-        $container['api.cache.ttl'] = !is_array(getenv('APP_API_CACHE_TTL')) ?
+        $pimple['api.cache.ttl'] = !is_array(getenv('APP_API_CACHE_TTL')) ?
             ((int) getenv('APP_API_CACHE_TTL') ?: 0) :
             0;
 
         /**
          * @return bool Displays cache tags in response headers.
          */
-        $container['api.use_cache_tags'] = true;
+        $pimple['api.use_cache_tags'] = true;
 
         /**
          * @return array
          */
-        $container['api.cors_options'] = [
+        $pimple['api.cors_options'] = [
             'allow_credentials' => true,
             'allow_origin' => ['*'],
             'allow_headers' => true,
@@ -63,9 +63,9 @@ class AppServiceProvider implements ServiceProviderInterface
         /*
          * Prevent accessing JSON resources from their Node path.
          */
-        $container['nodeDefaultControllerClass'] = NullController::class;
+        $pimple['nodeDefaultControllerClass'] = NullController::class;
 
-        $container[NodeSourceWalkerContext::class] = function ($c) {
+        $pimple[NodeSourceWalkerContext::class] = function ($c) {
             return new NodeSourceWalkerContext(
                 $c['stopwatch'],
                 $c['nodeTypesBag'],
@@ -75,13 +75,13 @@ class AppServiceProvider implements ServiceProviderInterface
             );
         };
 
-        $container['api.base_request_matcher'] = function (Container $c) {
+        $pimple['api.base_request_matcher'] = function (Container $c) {
             return new RequestMatcher(
                 '^'.preg_quote($c['api.prefix']).'/'.preg_quote($c['api.version'])
             );
         };
 
-        $container->extend('serializer.subscribers', function (array $subscribers, Container $c) {
+        $pimple->extend('serializer.subscribers', function (array $subscribers, Container $c) {
             $subscribers[] = new WalkerApiSubscriber();
             $subscribers[] = new NodesSourcesHeadSubscriber($c[NodesSourcesHeadFactory::class]);
             $subscribers[] = new BlockWalkerSubscriber(
@@ -93,7 +93,7 @@ class AppServiceProvider implements ServiceProviderInterface
             return $subscribers;
         });
 
-        $container->extend('accessMap', function (AccessMap $accessMap, Container $c) {
+        $pimple->extend('accessMap', function (AccessMap $accessMap, Container $c) {
             $accessMap->add(
                 $c['api.base_request_matcher'],
                 [$c['api.base_role']]
@@ -101,7 +101,7 @@ class AppServiceProvider implements ServiceProviderInterface
             return $accessMap;
         });
 
-        $container->extend('firewallMap', function (FirewallMap $firewallMap, Container $c) {
+        $pimple->extend('firewallMap', function (FirewallMap $firewallMap, Container $c) {
             /*
             * Add default API firewall entry.
             */
@@ -127,7 +127,7 @@ class AppServiceProvider implements ServiceProviderInterface
             return $firewallMap;
         });
 
-        $container['app.file_locator'] = function (Container $c) {
+        $pimple['app.file_locator'] = function (Container $c) {
             $resourcesFolder = dirname(__FILE__) . '/Resources';
             return new FileLocator([
                 $resourcesFolder,
@@ -136,7 +136,7 @@ class AppServiceProvider implements ServiceProviderInterface
             ]);
         };
 
-        $container->extend('routeCollection', function (RouteCollection $routeCollection, Container $c) {
+        $pimple->extend('routeCollection', function (RouteCollection $routeCollection, Container $c) {
             $loader = new YamlFileLoader($c['app.file_locator']);
             $routeCollection->addCollection($loader->load('routes.yml'));
             return $routeCollection;
@@ -145,7 +145,7 @@ class AppServiceProvider implements ServiceProviderInterface
         /*
          * RateLimiterFactory for POST contact forms
          */
-        $container['limiter.contact_form'] = function (Container $c) {
+        $pimple['limiter.contact_form'] = function (Container $c) {
             return new RateLimiterFactory([
                 'id' => 'contact-form',
                 'policy' => 'token_bucket',
@@ -157,19 +157,19 @@ class AppServiceProvider implements ServiceProviderInterface
         /*
          * Configure custom controllers
          */
-        $container[ContactFormController::class] = function (Container $c) {
+        $pimple[ContactFormController::class] = function (Container $c) {
             return new ContactFormController(
                 $c['contactFormManager'],
                 $c['limiter.contact_form']
             );
         };
-        $container[NodesSourcesHeadFactory::class] = function (Container $c) {
+        $pimple[NodesSourcesHeadFactory::class] = function (Container $c) {
             return new NodesSourcesHeadFactory($c['settingsBag'], $c['router'], $c['nodeSourceApi']);
         };
-        $container[BreadcrumbsFactoryInterface::class] = function (Container $c) {
+        $pimple[BreadcrumbsFactoryInterface::class] = function (Container $c) {
             return new NaiveBreadcrumbsFactory();
         };
-        $container[CommonContentController::class] = function (Container $c) {
+        $pimple[CommonContentController::class] = function (Container $c) {
             return new CommonContentController(
                 $c[Serializer::class],
                 $c['em'],
