@@ -1,11 +1,9 @@
-import boltsort;
-
-# See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
-# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
-
 # Marker to tell the VCL compiler that this VCL has been adapted to the
 # new 4.0 format.
 vcl 4.0;
+
+# See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
+# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
 
 # Default backend definition. Set this to point to your content server.
 backend default {
@@ -20,10 +18,6 @@ acl local {
 }
 
 sub vcl_recv {
-    # Sort query string params
-    # https://www.fastly.com/blog/using-boltsort-make-api-caching-more-efficient
-    set req.url = boltsort.sort(req.url);
-
     if (req.http.X-Forwarded-Proto == "https" ) {
         set req.http.X-Forwarded-Port = "443";
     } else {
