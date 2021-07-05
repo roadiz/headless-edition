@@ -88,6 +88,10 @@ sub vcl_backend_response {
     #
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
+
+    set beresp.grace = 2m;
+    set beresp.keep = 8m;
+
     # Cache 404 for short period
     if (beresp.status == 404) {
         set beresp.ttl = 30s;
