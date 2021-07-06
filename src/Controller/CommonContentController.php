@@ -169,6 +169,7 @@ final class CommonContentController
         $this->injectAlternateHrefLangLinks($request);
         $varyingHeaders = [
             'Accept-Encoding',
+            'Origin', // Need if request comes from Nuxt backend
             'Accept',
             'Authorization',
             'x-api-key'
