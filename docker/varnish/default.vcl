@@ -24,6 +24,12 @@ sub vcl_recv {
         set req.http.X-Forwarded-Port = "80";
     }
 
+    # https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+    if (req.http.Accept-Encoding ~ "br" && req.url !~
+        "\.(jpg|png|gif|zip|gz|mp3|mov|avi|mpg|mp4|swf|woff|woff2|wmf)$") {
+        set req.http.X-brotli = "true";
+    }
+
     #
     # Update this list to your backend available languages.
     #
@@ -100,6 +106,21 @@ sub vcl_recv {
         } else {
             return(synth(403, "Access denied."));
         }
+    }
+}
+
+# https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+sub vcl_hash {
+    if (req.http.X-brotli == "true") {
+        hash_data("brotli");
+    }
+}
+
+# https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+sub vcl_backend_fetch {
+    if (bereq.http.X-brotli == "true") {
+        set bereq.http.Accept-Encoding = "br";
+        unset bereq.http.X-brotli;
     }
 }
 
