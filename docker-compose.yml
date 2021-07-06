@@ -40,6 +40,11 @@ services:
             - "traefik.http.routers.${APP_NAMESPACE}_pma.entrypoints=http"
             - "traefik.http.routers.${APP_NAMESPACE}_pma.rule=Host(${HOSTNAME_PMA})"
             - "traefik.http.routers.${APP_NAMESPACE}_pma.service=${APP_NAMESPACE}_pma"
+            # Listen HTTPS
+            - "traefik.http.routers.${APP_NAMESPACE}_pma_secure.entrypoints=https"
+            - "traefik.http.routers.${APP_NAMESPACE}_pma_secure.tls=true"
+            - "traefik.http.routers.${APP_NAMESPACE}_pma_secure.rule=Host(${HOSTNAME_PMA})"
+            - "traefik.http.routers.${APP_NAMESPACE}_pma_secure.service=${APP_NAMESPACE}_pma"
 
     app:
         # Need to pass all vars to docker env for Crontab and supervisor scripts
@@ -81,6 +86,11 @@ services:
             - "traefik.http.routers.${APP_NAMESPACE}.entrypoints=http"
             - "traefik.http.routers.${APP_NAMESPACE}.rule=Host(${HOSTNAME})"
             - "traefik.http.routers.${APP_NAMESPACE}.service=${APP_NAMESPACE}"
+            # Listen HTTPS
+            - "traefik.http.routers.${APP_NAMESPACE}_secure.entrypoints=https"
+            - "traefik.http.routers.${APP_NAMESPACE}_secure.tls=true"
+            - "traefik.http.routers.${APP_NAMESPACE}_secure.rule=Host(${HOSTNAME})"
+            - "traefik.http.routers.${APP_NAMESPACE}_secure.service=${APP_NAMESPACE}"
 
     solr:
         build:
@@ -112,6 +122,11 @@ services:
             - "traefik.http.routers.${APP_NAMESPACE}_solr.entrypoints=http"
             - "traefik.http.routers.${APP_NAMESPACE}_solr.rule=Host(${HOSTNAME_SOLR})"
             - "traefik.http.routers.${APP_NAMESPACE}_solr.service=${APP_NAMESPACE}_solr"
+            # Listen HTTPS
+            - "traefik.http.routers.${APP_NAMESPACE}_solr_secure.entrypoints=https"
+            - "traefik.http.routers.${APP_NAMESPACE}_solr_secure.tls=true"
+            - "traefik.http.routers.${APP_NAMESPACE}_solr_secure.rule=Host(${HOSTNAME_SOLR})"
+            - "traefik.http.routers.${APP_NAMESPACE}_solr_secure.service=${APP_NAMESPACE}_solr"
 
     mailer:
         image: mailhog/mailhog
@@ -131,6 +146,11 @@ services:
             - "traefik.http.routers.${APP_NAMESPACE}_mailer.entrypoints=http"
             - "traefik.http.routers.${APP_NAMESPACE}_mailer.rule=Host(${HOSTNAME_MAILER})"
             - "traefik.http.routers.${APP_NAMESPACE}_mailer.service=${APP_NAMESPACE}_mailer"
+            # Listen HTTPS
+            - "traefik.http.routers.${APP_NAMESPACE}_mailer_secure.entrypoints=https"
+            - "traefik.http.routers.${APP_NAMESPACE}_mailer_secure.tls=true"
+            - "traefik.http.routers.${APP_NAMESPACE}_mailer_secure.rule=Host(${HOSTNAME_MAILER})"
+            - "traefik.http.routers.${APP_NAMESPACE}_mailer_secure.service=${APP_NAMESPACE}_mailer"
 
     blackfire:
         image: blackfire/blackfire
@@ -166,6 +186,11 @@ services:
             - "traefik.http.routers.${APP_NAMESPACE}_varnish.entrypoints=http"
             - "traefik.http.routers.${APP_NAMESPACE}_varnish.rule=Host(${HOSTNAME_VARNISH})"
             - "traefik.http.routers.${APP_NAMESPACE}_varnish.service=${APP_NAMESPACE}_varnish"
+            # Listen HTTPS
+            - "traefik.http.routers.${APP_NAMESPACE}_varnish_secure.entrypoints=https"
+            - "traefik.http.routers.${APP_NAMESPACE}_varnish_secure.tls=true"
+            - "traefik.http.routers.${APP_NAMESPACE}_varnish_secure.rule=Host(${HOSTNAME_VARNISH})"
+            - "traefik.http.routers.${APP_NAMESPACE}_varnish_secure.service=${APP_NAMESPACE}_varnish"
 
 networks:
     frontproxynet:

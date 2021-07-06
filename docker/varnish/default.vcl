@@ -24,6 +24,33 @@ sub vcl_recv {
         set req.http.X-Forwarded-Port = "80";
     }
 
+    #
+    # Update this list to your backend available languages.
+    #
+    # The following VCL code will normalize the ‘Accept-Language’ header
+    # to either “fr”, “de”, … or “en”, in this order of precedence:
+    if (req.http.Accept-Language) {
+        if (req.http.Accept-Language ~ "fr") {
+            set req.http.Accept-Language = "fr";
+        } elsif (req.http.Accept-Language ~ "de") {
+            set req.http.Accept-Language = "de";
+        } elsif (req.http.Accept-Language ~ "it") {
+            set req.http.Accept-Language = "it";
+        } elsif (req.http.Accept-Language ~ "zh") {
+            set req.http.Accept-Language = "zh";
+        } elsif (req.http.Accept-Language ~ "ja") {
+            set req.http.Accept-Language = "ja";
+        } elsif (req.http.Accept-Language ~ "es") {
+            set req.http.Accept-Language = "es";
+        } elsif (req.http.Accept-Language ~ "en") {
+            set req.http.Accept-Language = "en";
+        } else {
+            # unknown language. Remove the accept-language header and
+            # use the backend default.
+            unset req.http.Accept-Language;
+        }
+    }
+
     # Remove has_js and Cloudflare/Google Analytics __* cookies.
     set req.http.Cookie = regsuball(req.http.Cookie, "(^|;\s*)(_[_a-z]+|has_js)=[^;]*", "");
     # Remove a ";" prefix, if present.
