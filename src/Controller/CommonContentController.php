@@ -20,6 +20,7 @@ use Themes\AbstractApiTheme\Cache\CacheTagsCollection;
 use Themes\AbstractApiTheme\Controllers\LocalizedController;
 use Themes\AbstractApiTheme\Serialization\Exclusion\PropertiesExclusionStrategy;
 use Themes\AbstractApiTheme\Serialization\SerializationContextFactory;
+use Themes\AbstractApiTheme\Subscriber\CachableApiResponseSubscriber;
 
 final class CommonContentController
 {
@@ -101,6 +102,11 @@ final class CommonContentController
         return $this->entityManager->getRepository(Translation::class);
     }
 
+    protected function getDefaultLocale(): string
+    {
+        return 'fr';
+    }
+
     /**
      * @return UrlGeneratorInterface
      */
@@ -120,8 +126,7 @@ final class CommonContentController
      */
     public function defaultAction(Request $request): JsonResponse
     {
-        $locale = $request->query->get('_locale', 'fr');
-        $translation = $this->getTranslationForLocale($locale);
+        $translation = $this->getTranslationFromLocaleOrRequest($request, $request->query->get('_locale'));
 
         $menuResponse = new CommonContentResponse(
             $this->nodeSourceApi,
@@ -162,12 +167,22 @@ final class CommonContentController
             }
         }
         $this->injectAlternateHrefLangLinks($request);
-        $response->setVary(implode(', ', [
+        $varyingHeaders = [
             'Accept-Encoding',
             'Accept',
             'Authorization',
             'x-api-key'
-        ]));
+        ];
+        if ($request->attributes->getBoolean(CachableApiResponseSubscriber::VARY_ON_ACCEPT_LANGUAGE_ATTRIBUTE)) {
+            $varyingHeaders[] = 'Accept-Language';
+        }
+        if ($request->attributes->has(CachableApiResponseSubscriber::CONTENT_LANGUAGE_ATTRIBUTE)) {
+            $response->headers->set(
+                'content-language',
+                $request->attributes->getAlpha(CachableApiResponseSubscriber::CONTENT_LANGUAGE_ATTRIBUTE)
+            );
+        }
+        $response->setVary(implode(', ', $varyingHeaders));
         if ($request->isMethodCacheable()) {
             $response->setTtl($menuResponse->getTtl());
         }
