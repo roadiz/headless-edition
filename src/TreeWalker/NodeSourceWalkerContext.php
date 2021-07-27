@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\TreeWalker;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use RZ\Roadiz\CMS\Utils\NodeSourceApi;
 use RZ\Roadiz\Core\Bags\NodeTypes;
 use RZ\TreeWalker\WalkerContextInterface;
@@ -17,27 +18,27 @@ final class NodeSourceWalkerContext implements WalkerContextInterface
     private NodeTypes $nodeTypesBag;
     private NodeSourceApi $nodeSourceApi;
     private RequestStack $requestStack;
-    private EntityManagerInterface $entityManager;
+    private ManagerRegistry $managerRegistry;
 
     /**
-     * @param Stopwatch                     $stopwatch
-     * @param NodeTypes                     $nodeTypesBag
-     * @param NodeSourceApi                 $nodeSourceApi
-     * @param RequestStack                  $requestStack
-     * @param EntityManagerInterface        $entityManager
+     * @param Stopwatch $stopwatch
+     * @param NodeTypes $nodeTypesBag
+     * @param NodeSourceApi $nodeSourceApi
+     * @param RequestStack $requestStack
+     * @param ManagerRegistry $managerRegistry
      */
     public function __construct(
         Stopwatch $stopwatch,
         NodeTypes $nodeTypesBag,
         NodeSourceApi $nodeSourceApi,
         RequestStack $requestStack,
-        EntityManagerInterface $entityManager
+        ManagerRegistry $managerRegistry
     ) {
         $this->stopwatch = $stopwatch;
         $this->nodeTypesBag = $nodeTypesBag;
         $this->nodeSourceApi = $nodeSourceApi;
         $this->requestStack = $requestStack;
-        $this->entityManager = $entityManager;
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**
@@ -81,10 +82,18 @@ final class NodeSourceWalkerContext implements WalkerContextInterface
     }
 
     /**
-     * @return EntityManagerInterface
+     * @return ManagerRegistry
      */
-    public function getEntityManager(): EntityManagerInterface
+    public function getManagerRegistry(): ManagerRegistry
     {
-        return $this->entityManager;
+        return $this->managerRegistry;
+    }
+
+    /**
+     * @return ObjectManager
+     */
+    public function getEntityManager(): ObjectManager
+    {
+        return $this->getManagerRegistry()->getManager();
     }
 }

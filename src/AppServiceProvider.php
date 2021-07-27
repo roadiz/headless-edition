@@ -12,6 +12,7 @@ use App\Serialization\NodesSourcesHeadSubscriber;
 use App\Serialization\WalkerApiSubscriber;
 use App\TreeWalker\AutoChildrenNodeSourceWalker;
 use App\TreeWalker\NodeSourceWalkerContext;
+use Doctrine\Persistence\ManagerRegistry;
 use JMS\Serializer\Serializer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -71,7 +72,7 @@ class AppServiceProvider implements ServiceProviderInterface
                 $c['nodeTypesBag'],
                 $c['nodeSourceApi'],
                 $c['requestStack'],
-                $c['em']
+                $c[ManagerRegistry::class]
             );
         };
 
@@ -172,7 +173,7 @@ class AppServiceProvider implements ServiceProviderInterface
         $pimple[CommonContentController::class] = function (Container $c) {
             return new CommonContentController(
                 $c[Serializer::class],
-                $c['em'],
+                $c[ManagerRegistry::class],
                 $c[SerializationContextFactoryInterface::class],
                 $c['nodeSourceApi'],
                 $c[NodeSourceWalkerContext::class],
