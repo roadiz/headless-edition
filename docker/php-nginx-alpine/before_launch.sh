@@ -8,5 +8,5 @@ printenv | sed 's/^\(.*\)$/export \1/g' | grep -E "^export (SYMFONY|APP|ROADIZ|M
 /bin/chmod +x /var/www/html/project_env.sh;
 
 # Uncomment following line to enable automatic migration for your theme at each docker start
-/usr/bin/sudo -u www-data -- bash -c "/var/www/html/project_env.sh; bin/roadiz bin/roadiz migrations:migrate -q --allow-no-migration"
-/usr/bin/sudo -u www-data -- bash -c "/var/www/html/project_env.sh; bin/roadiz themes:migrate -n src/Resources/config.yml"
+/usr/bin/sudo -u www-data -- bash -c "/var/www/html/project_env.sh; /var/www/html/bin/roadiz migrations:migrate -q --allow-no-migration"
+/usr/bin/sudo -u www-data -- bash -c "/var/www/html/project_env.sh; /var/www/html/bin/roadiz themes:migrate -n src/Resources/config.yml"
