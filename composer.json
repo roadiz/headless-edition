@@ -5,7 +5,10 @@
     "require": {
         "php": ">=7.4",
         "roadiz/roadiz": "dev-develop",
+        "roadiz/models": "dev-develop",
         "roadiz/documents": "dev-develop",
+        "roadiz/openid": "~1.7.0 || dev-main",
+        "roadiz/markdown": "~1.7.0 || dev-develop",
         "roadiz/abstract-api-theme": "dev-develop",
         "roadiz/dts-generator": "dev-main",
         "roadiz/nodetype-contracts": "dev-main",
