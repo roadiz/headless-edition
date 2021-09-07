@@ -5,6 +5,7 @@
     "require": {
         "php": ">=7.4",
         "roadiz/roadiz": "dev-develop",
+        "roadiz/rozier": "dev-develop",
         "roadiz/models": "dev-develop",
         "roadiz/documents": "dev-develop",
         "roadiz/openid": "~1.7.0 || dev-main",

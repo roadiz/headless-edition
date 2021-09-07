@@ -5,6 +5,7 @@ namespace App;
 
 use RZ\Roadiz\Core\Kernel;
 use Themes\AbstractApiTheme\Services\AbstractApiServiceProvider;
+use Themes\Rozier\Services\RozierServiceProvider;
 
 /**
  * Customize Roadiz kernel with your own project settings.
@@ -61,6 +62,7 @@ class AppKernel extends Kernel
     {
         parent::register($container);
         // Headless edition: do not remove API services
+        $container->register(new RozierServiceProvider());
         $container->register(new AbstractApiServiceProvider());
         $container->register(new AppServiceProvider());
 
