@@ -45,7 +45,102 @@ your node-types children fields to create a JSON graph when requesting a single 
 
 Automatic node-source controller resolution is disabled and any request on a node-source path will end up in `src/Controller/NullController.php`, so your application clients have to use your secure API end-points.
 
+### Boilerplate for exposing content API for static-site generators
+
+Headless edition has been built to work with a *NuxtJS* application and minimizing API calls.
+
+The most important call you'll make is the *Get single node-source by path* which combine searching a node-source by its path **and** fetching its content
+in **single** data context.
+
+To retrieve homepage, you can execute `GET /api/1.0/nodes-sources/by-path?path=/`:
+
+```json
+{
+    "slug": "homepage",
+    "@type": "Page",
+    "node": {
+        "nodeName": "homepage",
+        "home": true,
+        "visible": true,
+        "tags": [],
+        "attributeValues": []
+    },
+    "translation": {
+        "locale": "en"
+    },
+    "urlAliases": [],
+    "title": "Homepage",
+    "metaTitle": "Homepage – Headless",
+    "metaKeywords": "",
+    "metaDescription": "Homepage – Headless",
+    "url": "/",
+    "@id": "http://headless.test/api/1.0/page/2/en",
+    "head": {
+        "siteName": "Headless",
+        "homePageUrl": "/"
+    }
+}
+```
+
+This is way more efficient than executing :
+
+- `/api/1.0/nodes-sources?path=/` which is a *hydra:Collection* response
+- and then once you know `@id`, you can request a single node-source response: `/api/1.0/page/2/en`
+
+---
+
+You'll find some boilerplate models and controller for serving *common contents* for building menus and finding social links.
+For example: `/api/1.0/common` will expose `CommonContentResponse` model which can be customized to expose some useful data that could be painful to fetch
+through *NodesSources* API endpoints, such as hierarchical menu views, or *Roadiz* settings.
+
+```json
+{
+    "mainMenuWalker": {
+        "children": [],
+        "item": {
+            "slug": "main-menu",
+            "@type": "Neutral",
+            "node": {
+                "nodeName": "main-menu",
+                "visible": false,
+                "tags": []
+            },
+            "title": "Main menu",
+            "@id": "http://headless.test/api/1.0/neutral/1/en"
+        },
+        "@type": "MenuNodeSourceWalker"
+    },
+    "head": {
+        "siteName": "Headless",
+        "homePageUrl": "/"
+    }
+}
+```
+
 ## Usage
+
+### Use ready-to-go Docker image
+If you do not need any custom code or to version your content schema, you can launch a Roadiz headless with our
+Docker standalone image and our `docker-compose.standalone.yml` example stack.
+
+Override ./app/conf/config.yaml file if necessary (for Solr configuration or custom monolog handler)
+
+```bash
+docker-compose up -d --force-recreate
+docker-compose exec -u www-data app bin/roadiz migration:migrate --allow-no-migration -n
+docker-compose exec -u www-data app bin/roadiz install -n --env=install 
+docker-compose exec -u www-data app bin/roadiz generate:private-key
+docker-compose up -d --force-recreate --no-deps app varnish
+docker-compose exec -u www-data app bin/roadiz users:create -m johndoe@roadiz.io -b -s -p "supersecretpassword" johndoe 
+```
+
+Then browse to `https://headless.test/rz-admin` and build your headless API.
+
+Standalone code is configured to create a `CommonContentResponse` from a `main-menu` node. If you need to customize
+common content responses, we invite you to create a custom project.
+
+### Create a new custom project
+For custom projects we recommend starting from a dedicated repository:
 
 ```bash
 # Create a new Roadiz project on develop branch
@@ -72,6 +167,11 @@ nano .env;
 docker-compose build;
 # Create and start containers
 docker-compose up -d;
+# Initialize database and base content
+docker-compose exec -u www-data app bin/roadiz migration:migrate --allow-no-migration -n
+docker-compose exec -u www-data app bin/roadiz install -n --env=install 
+# Restart to empty caches
+docker-compose up -d --force-recreate --no-deps app varnish
 ```
 
 ##### Issue with Solr container

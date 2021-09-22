@@ -7,3 +7,12 @@ api_contact_form:
         _controller: App\Controller\ContactFormController::formAction
         _locale: en
         _format: json
+
+api_common_content_response:
+    methods: [GET]
+    # Configure path behind Firewall prefix…
+    path: /api/1.0/common
+    defaults:
+        _controller: App\Controller\CommonContentController::defaultAction
+        _locale: fr
+        _format: json

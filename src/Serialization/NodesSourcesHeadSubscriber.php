@@ -15,9 +15,19 @@ final class NodesSourcesHeadSubscriber extends AbstractReachableNodesSourcesPost
 {
     private NodesSourcesHeadFactory $nodesSourcesHeadFactory;
 
+    protected function once(): bool
+    {
+        return true;
+    }
+
     protected function atRoot(): bool
     {
         return true;
+    }
+
+    protected static function getPriority(): int
+    {
+        return 1000;
     }
 
     /**

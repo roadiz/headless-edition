@@ -15,6 +15,7 @@ README.md
 Dockerfile
 Dockerfile.archive
 docker-compose.yml
+docker-compose.standalone.yml
 Headless Roadiz API.postman_collection.json
 
 */temp*
@@ -28,6 +29,8 @@ app/logs/*
 app/cache/*
 app/gen-src/*
 app/conf/config.yml
+app/conf/default.key
+app/conf/default.pub.key
 app/*.zip
 app/*.sql
 app/*.tar.gz
@@ -46,13 +49,15 @@ web/files/*
 */*.log
 Vagrantfile
 pimple.json
+supervisord.pid
+project_env.sh
+.phpcs-cache
 
 !vendor
 !app/gen-src/GeneratedNodeSources/.gitignore
 !app/gen-src/Proxies/.gitignore
-!docker/php74-nginx-alpine/crontab.txt
-!docker/php74-nginx-alpine/before_launch.sh
 !docker/php-nginx-alpine/crontab.txt
+!docker/php-nginx-alpine/supervisor.ini
 !docker/php-nginx-alpine/before_launch.sh
 !themes/BaseTheme/static
 !themes/BaseTheme/Resources/views/partials/*

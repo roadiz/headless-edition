@@ -1,6 +1,7 @@
 ---
 appNamespace: '%env(string:APP_NAMESPACE)%'
 timezone: '%env(string:APP_TIMEZONE)%'
+staticDomainName: '%env(string:APP_STATIC_DOMAIN_NAME)%'
 doctrine:
     driver: "pdo_mysql"
     host: '%env(string:MYSQL_HOST)%'
@@ -56,6 +57,48 @@ assetsProcessing:
     jpegoptimPath: /usr/bin/jpegoptim
     pngquantPath: /usr/bin/pngquant
     subscribers: []
+
+#
+# Messenger non-default configuration
+#
+messenger:
+    failure_transport: 'failed_default'
+    transports:
+        default:
+            dsn: '%env(string:APP_MESSENGER_DEFAULT_TRANSPORT_DSN)%'
+            options: []
+        async:
+            dsn: 'doctrine://default?queue_name=async'
+            options: []
+        failed_default:
+            dsn: 'doctrine://default?queue_name=failed_default'
+            options: []
+    routing:
+        RZ\Roadiz\Message\AsyncMessage: async
+
+#
+# Reverse proxy invalidation
+#
+reverseProxyCache:
+    frontend:
+        varnish:
+            host: '%env(string:VARNISH_HOST)%'
+            domainName: '%env(string:VARNISH_DOMAIN)%'
+
+#
+# Monolog configuration
+#
+monolog:
+    handlers:
+        default:
+            type: rotating_file
+            path: '%kernel.log_dir%/roadiz.log'
+            level: INFO
+#        sentry:
+#            type: sentry
+#            level: WARNING
+#            url: '%env(string:APP_SENTRY_DSN)%'
+
 #
 # Solr endpoint example
 #
@@ -70,25 +113,3 @@ assetsProcessing:
 #            username: ""
 #            password: ""
 
-#
-# Reverse proxy invalidation
-#
-#reverseProxyCache:
-#    frontend:
-#        varnish:
-#            host: '%env(string:VARNISH_HOST)%'
-#            domainName: '%env(string:VARNISH_DOMAIN)%'
-
-#
-# Monolog non-default configuration
-#
-#monolog:
-#    handlers:
-#        default:
-#            type: rotating_file
-#            path: '%kernel.log_dir%/roadiz.log'
-#            level: DEBUG
-#        sentry:
-#            type: sentry
-#            level: WARNING
-#            url: '%env(string:APP_SENTRY_DSN)%'

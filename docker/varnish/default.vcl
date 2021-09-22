@@ -1,16 +1,9 @@
-#
-# This is an example VCL file for Varnish.
-#
-# It does not do anything by default, delegating control to the
-# builtin VCL. The builtin VCL is called when there is no explicit
-# return statement.
-#
-# See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
-# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
-
 # Marker to tell the VCL compiler that this VCL has been adapted to the
 # new 4.0 format.
 vcl 4.0;
+
+# See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
+# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
 
 # Default backend definition. Set this to point to your content server.
 backend default {
@@ -29,6 +22,39 @@ sub vcl_recv {
         set req.http.X-Forwarded-Port = "443";
     } else {
         set req.http.X-Forwarded-Port = "80";
+    }
+
+    # https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+    if (req.http.Accept-Encoding ~ "br" && req.url !~
+        "\.(jpg|png|gif|zip|gz|mp3|mov|avi|mpg|mp4|swf|woff|woff2|wmf)$") {
+        set req.http.X-brotli = "true";
+    }
+
+    #
+    # Update this list to your backend available languages.
+    #
+    # The following VCL code will normalize the ‘Accept-Language’ header
+    # to either “fr”, “de”, … or “en”, in this order of precedence:
+    if (req.http.Accept-Language) {
+        if (req.http.Accept-Language ~ "fr") {
+            set req.http.Accept-Language = "fr";
+        } elsif (req.http.Accept-Language ~ "de") {
+            set req.http.Accept-Language = "de";
+        } elsif (req.http.Accept-Language ~ "it") {
+            set req.http.Accept-Language = "it";
+        } elsif (req.http.Accept-Language ~ "zh") {
+            set req.http.Accept-Language = "zh";
+        } elsif (req.http.Accept-Language ~ "ja") {
+            set req.http.Accept-Language = "ja";
+        } elsif (req.http.Accept-Language ~ "es") {
+            set req.http.Accept-Language = "es";
+        } elsif (req.http.Accept-Language ~ "en") {
+            set req.http.Accept-Language = "en";
+        } else {
+            # unknown language. Remove the accept-language header and
+            # use the backend default.
+            unset req.http.Accept-Language;
+        }
     }
 
     # Remove has_js and Cloudflare/Google Analytics __* cookies.
@@ -83,11 +109,36 @@ sub vcl_recv {
     }
 }
 
+# https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+sub vcl_hash {
+    if (req.http.X-brotli == "true") {
+        hash_data("brotli");
+    }
+}
+
+# https://info.varnish-software.com/blog/varnish-cache-brotli-compression
+sub vcl_backend_fetch {
+    if (bereq.http.X-brotli == "true") {
+        set bereq.http.Accept-Encoding = "br";
+        unset bereq.http.X-brotli;
+    }
+}
+
 sub vcl_backend_response {
     # Happens after we have read the response headers from the backend.
     #
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
+
+    set beresp.grace = 2m;
+    set beresp.keep = 8m;
+
+    # Cache 404 for short period
+    if (beresp.status == 404) {
+        set beresp.ttl = 30s;
+        unset beresp.http.Set-Cookie;
+        return (deliver);
+    }
 
     # Clean backend responses only on public pages.
     if (bereq.url !~ "^/(rz-admin|preview\.php|clear_cache\.php|install\.php|dev\.php)" && bereq.url !~ "(\?|\&)_preview=") {

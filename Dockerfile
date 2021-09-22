@@ -8,6 +8,8 @@ RUN usermod -u ${USER_UID} www-data \
     && groupmod -g ${USER_UID} www-data
 
 COPY docker/php-nginx-alpine/crontab.txt /crontab.txt
+# Added Roadiz messenger for async tasks
+COPY docker/php-nginx-alpine/supervisor.ini /etc/supervisor.d/services.ini
 COPY docker/php-nginx-alpine/before_launch.sh /before_launch.sh
 COPY --chown=www-data:www-data . /var/www/html/
 COPY --chown=www-data:www-data samples/index.php.sample /var/www/html/web/index.php

@@ -653,6 +653,62 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Single node-source by path",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/nodes-sources/by-path?path=/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"nodes-sources",
+								"by-path"
+							],
+							"query": [
+								{
+									"key": "path",
+									"value": "/"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Common",
+			"item": [
+				{
+					"name": "Common content",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/1.0/common?_locale=fr",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"1.0",
+								"common"
+							],
+							"query": [
+								{
+									"key": "_locale",
+									"value": "fr"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -743,22 +799,18 @@
 	],
 	"variable": [
 		{
-			"id": "74ed4b3d-876c-4830-b27e-c06842c109da",
 			"key": "baseUrl",
 			"value": "http://headless.test/dev.php"
 		},
 		{
-			"id": "7fd0dc83-434f-48e3-afbf-87d5bfa9fa3a",
 			"key": "token",
 			"value": ""
 		},
 		{
-			"id": "8c47ec8c-f57a-41ab-8f7e-46c2a0b0eae6",
 			"key": "clientId",
 			"value": ""
 		},
 		{
-			"id": "b7f07e97-1a83-4bab-b7b7-96c92a139aeb",
 			"key": "apiKey",
 			"value": ""
 		}

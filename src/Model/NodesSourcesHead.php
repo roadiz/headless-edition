@@ -8,16 +8,17 @@ use RZ\Roadiz\CMS\Utils\NodeSourceApi;
 use RZ\Roadiz\Core\Bags\Settings;
 use RZ\Roadiz\Core\Entities\Document;
 use RZ\Roadiz\Core\Entities\NodesSources;
+use RZ\Roadiz\Core\Entities\Translation;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class NodesSourcesHead
 {
     /**
-     * @var NodesSources
+     * @var NodesSources|null
      * @Serializer\Exclude
      */
-    private NodesSources $nodesSource;
+    private ?NodesSources $nodesSource;
     /**
      * @var Settings
      * @Serializer\Exclude
@@ -33,28 +34,36 @@ final class NodesSourcesHead
      * @Serializer\Exclude
      */
     private NodeSourceApi $nodeSourceApi;
+    /**
+     * @Serializer\Exclude
+     */
+    private Translation $defaultTranslation;
 
     /**
-     * @param NodesSources $nodesSource
+     * @param NodesSources|null $nodesSource
      * @param Settings $settingsBag
      * @param UrlGeneratorInterface $urlGenerator
      * @param NodeSourceApi $nodeSourceApi
+     * @param Translation $defaultTranslation
      */
     public function __construct(
-        NodesSources $nodesSource,
+        ?NodesSources $nodesSource,
         Settings $settingsBag,
         UrlGeneratorInterface $urlGenerator,
-        NodeSourceApi $nodeSourceApi
+        NodeSourceApi $nodeSourceApi,
+        Translation $defaultTranslation
     ) {
         $this->nodesSource = $nodesSource;
         $this->settingsBag = $settingsBag;
         $this->urlGenerator = $urlGenerator;
         $this->nodeSourceApi = $nodeSourceApi;
+        $this->defaultTranslation = $defaultTranslation;
     }
 
     /**
      * @return string|null
-     * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
      * @Serializer\VirtualProperty
      */
     public function getGoogleAnalytics(): ?string
@@ -64,7 +73,8 @@ final class NodesSourcesHead
 
     /**
      * @return string|null
-     * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
      * @Serializer\VirtualProperty
      */
     public function getGoogleTagManager(): ?string
@@ -74,7 +84,29 @@ final class NodesSourcesHead
 
     /**
      * @return string|null
-     * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getMatomoUrl(): ?string
+    {
+        return $this->settingsBag->get('matomo_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getMatomoSiteId(): ?string
+    {
+        return $this->settingsBag->get('matomo_site_id', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
      * @Serializer\VirtualProperty
      */
     public function getSiteName(): ?string
@@ -85,19 +117,22 @@ final class NodesSourcesHead
 
     /**
      * @return string|null
-     * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
      * @Serializer\VirtualProperty
      */
     public function getPolicyUrl(): ?string
     {
+        $translation = $this->getTranslation();
+
         $policyNodeSource = $this->nodeSourceApi->getOneBy([
             'node.nodeName' => 'privacy',
-            'translation' => $this->nodesSource->getTranslation()
+            'translation' => $translation
         ]);
         if (null === $policyNodeSource) {
             $policyNodeSource = $this->nodeSourceApi->getOneBy([
                 'node.nodeName' => 'legal',
-                'translation' => $this->nodesSource->getTranslation()
+                'translation' => $translation
             ]);
         }
         if (null !== $policyNodeSource) {
@@ -110,7 +145,8 @@ final class NodesSourcesHead
 
     /**
      * @return string|null
-     * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
      * @Serializer\VirtualProperty
      */
     public function getMainColor(): ?string
@@ -119,8 +155,80 @@ final class NodesSourcesHead
     }
 
     /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getFacebookUrl(): ?string
+    {
+        return $this->settingsBag->get('facebook_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getInstagramUrl(): ?string
+    {
+        return $this->settingsBag->get('instagram_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getTwitterUrl(): ?string
+    {
+        return $this->settingsBag->get('twitter_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getYoutubeUrl(): ?string
+    {
+        return $this->settingsBag->get('youtube_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\SkipWhenEmpty
+     * @Serializer\VirtualProperty
+     */
+    public function getLinkedinUrl(): ?string
+    {
+        return $this->settingsBag->get('linkedin_url', null) ?? null;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\Groups({"nodes_sources_single", "walker"})
+     * @Serializer\VirtualProperty
+     */
+    public function getHomePageUrl(): ?string
+    {
+        $homePage = $this->getHomePage();
+        if (null !== $homePage) {
+            return $this->urlGenerator->generate(RouteObjectInterface::OBJECT_BASED_ROUTE_NAME, [
+                RouteObjectInterface::ROUTE_OBJECT => $homePage
+            ]);
+        }
+        return null;
+    }
+
+    /**
      * @return Document|null
      * @Serializer\Groups({"nodes_sources_single"})
+     * @Serializer\SkipWhenEmpty
      * @Serializer\VirtualProperty
      */
     public function getShareImage(): ?Document
@@ -136,5 +244,21 @@ final class NodesSourcesHead
             return $this->nodesSource->getImage()[0];
         }
         return $this->settingsBag->getDocument('share_image') ?? null;
+    }
+
+    private function getTranslation(): Translation
+    {
+        if (null !== $this->nodesSource) {
+            return $this->nodesSource->getTranslation();
+        }
+        return $this->defaultTranslation;
+    }
+
+    private function getHomePage(): ?NodesSources
+    {
+        return $this->nodeSourceApi->getOneBy([
+            'node.home' => true,
+            'translation' => $this->getTranslation()
+        ]);
     }
 }
