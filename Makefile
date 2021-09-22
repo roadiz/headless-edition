@@ -34,6 +34,18 @@ build-docker:
 	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:develop .
 	docker buildx build --push --platform linux/amd64 --tag roadiz/varnish:develop ./docker/varnish
 
+build-docker-latest:
+	rm -f composer.lock
+	docker-compose exec -u www-data app composer install --optimize-autoloader --apcu-autoloader;
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:latest .
+	docker buildx build --push --platform linux/amd64 --tag roadiz/varnish:latest ./docker/varnish
+
+build-docker-tag:
+	rm -f composer.lock
+	docker-compose exec -u www-data app composer install --optimize-autoloader --apcu-autoloader;
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:${IMAGE_TAG} .
+	docker buildx build --push --platform linux/amd64 --tag roadiz/varnish:${IMAGE_TAG} ./docker/varnish
+
 ngrok:
 	ngrok http ${DEV_DOMAIN}
 
