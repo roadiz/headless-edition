@@ -5,6 +5,7 @@ namespace App\Model;
 
 use JMS\Serializer\Annotation as Serializer;
 use RZ\Roadiz\CMS\Utils\NodeSourceApi;
+use RZ\Roadiz\Core\AbstractEntities\TranslationInterface;
 use RZ\Roadiz\Core\Bags\Settings;
 use RZ\Roadiz\Core\Entities\Document;
 use RZ\Roadiz\Core\Entities\NodesSources;
@@ -37,21 +38,21 @@ final class NodesSourcesHead
     /**
      * @Serializer\Exclude
      */
-    private Translation $defaultTranslation;
+    private TranslationInterface $defaultTranslation;
 
     /**
      * @param NodesSources|null $nodesSource
      * @param Settings $settingsBag
      * @param UrlGeneratorInterface $urlGenerator
      * @param NodeSourceApi $nodeSourceApi
-     * @param Translation $defaultTranslation
+     * @param TranslationInterface $defaultTranslation
      */
     public function __construct(
         ?NodesSources $nodesSource,
         Settings $settingsBag,
         UrlGeneratorInterface $urlGenerator,
         NodeSourceApi $nodeSourceApi,
-        Translation $defaultTranslation
+        TranslationInterface $defaultTranslation
     ) {
         $this->nodesSource = $nodesSource;
         $this->settingsBag = $settingsBag;
@@ -246,7 +247,7 @@ final class NodesSourcesHead
         return $this->settingsBag->getDocument('share_image') ?? null;
     }
 
-    private function getTranslation(): Translation
+    private function getTranslation(): TranslationInterface
     {
         if (null !== $this->nodesSource) {
             return $this->nodesSource->getTranslation();
