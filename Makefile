@@ -31,8 +31,8 @@ migrate:
 build-docker:
 	rm -f composer.lock
 	docker-compose exec -u www-data app composer install --optimize-autoloader --apcu-autoloader;
-	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:develop .
-	docker buildx build --push --platform linux/amd64 --tag roadiz/varnish:develop ./docker/varnish
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/headless-edition:latest --tag roadiz/headless-edition:1.7.3 .
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag roadiz/varnish:latest --tag roadiz/varnish:1.7.3 ./docker/varnish
 
 ngrok:
 	ngrok http ${DEV_DOMAIN}
