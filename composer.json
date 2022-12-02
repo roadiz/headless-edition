@@ -87,5 +87,10 @@
             "./.env.dist": "./.env"
         },
         "config-path": "./app/conf/config.yml"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }
